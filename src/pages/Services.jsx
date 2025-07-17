@@ -20,7 +20,7 @@ const waterproofingServices = [
   'Swimming Pool Waterproofing',
 ];
 
-export default function Services() {
+export default function Services({ openQuoteModal }) {
   const [hoveredService, setHoveredService] = useState(null);
   const [animationTrigger, setAnimationTrigger] = useState(false);
 
@@ -99,7 +99,10 @@ export default function Services() {
         
         {/* Call to Action */}
         <div className="mt-8 pt-6 border-t border-white/10">
-          <button className={`w-full py-4 px-6 rounded-2xl bg-gradient-to-r ${gradient} text-white font-semibold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group/btn`}>
+          <button
+            className={`w-full py-4 px-6 rounded-2xl bg-gradient-to-r ${gradient} text-white font-semibold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group/btn`}
+            onClick={openQuoteModal}
+          >
             <Sparkles className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300" />
             Get Quote
             <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -113,16 +116,16 @@ export default function Services() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/4 left-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-40 h-40 sm:w-64 sm:h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
       
-      <div className="relative z-10 container mx-auto px- py-22">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-22 sm:py-20">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10 sm:mb-16">
           
-          <h1 className={`text-6xl md:text-7xl font-bold mb-6 transition-all duration-700 transform ${
+          <h1 className={`text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 transition-all duration-700 transform ${
             animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`} style={{ transitionDelay: '200ms' }}>
             <span className="text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text">
@@ -130,7 +133,7 @@ export default function Services() {
             </span>
           </h1>
           
-          <p className={`text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed transition-all duration-700 transform ${
+          <p className={`text-base sm:text-lg md:text-xl text-gray-300 max-w-xl sm:max-w-2xl mx-auto leading-relaxed transition-all duration-700 transform ${
             animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`} style={{ transitionDelay: '400ms' }}>
             Discover our premium range of flooring and waterproofing solutions, 
@@ -139,13 +142,14 @@ export default function Services() {
         </div>
         
         {/* Services Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-2xl md:max-w-7xl mx-auto">
           <ServiceCard
             title="Flooring Services"
             services={flooringServices}
             icon={Hammer}
             gradient="from-blue-600 to-cyan-600"
             delay={600}
+            openQuoteModal={openQuoteModal}
           />
           
           <ServiceCard
@@ -154,17 +158,21 @@ export default function Services() {
             icon={Shield}
             gradient="from-purple-600 to-pink-600"
             delay={800}
+            openQuoteModal={openQuoteModal}
           />
         </div>
         
         {/* Bottom CTA */}
-        <div className={`text-center mt-20 transition-all duration-700 transform ${
+        <div className={`text-center mt-14 sm:mt-20 transition-all duration-700 transform ${
           animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`} style={{ transitionDelay: '1000ms' }}>
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 cursor-pointer group">
-            <Droplets className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+          <div
+            className="inline-flex items-center gap-3 sm:gap-4 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 cursor-pointer group text-base sm:text-lg"
+            onClick={openQuoteModal}
+          >
+            <Droplets className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform duration-300" />
             <span>Ready to Transform Your Space?</span>
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
           </div>
         </div>
       </div>

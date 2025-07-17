@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Shield, Phone, Mail, Star, CheckCircle, Users, Calendar, Award, ArrowRight, ChevronLeft, Plus, Minus, Eye, ExternalLink } from 'lucide-react';
+import ContactForm from '../components/ContactForm';
 
-export default function LandingPage() {
+export default function LandingPage({ openQuoteModal }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeProject, setActiveProject] = useState(0);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [counters, setCounters] = useState({
     projects: 0,
     experience: 0,
@@ -14,7 +16,7 @@ export default function LandingPage() {
 
   // Counter animation
   useEffect(() => {
-    const targets = { projects: 500, experience: 15, clients: 1200, warranty: 25 };
+    const targets = { projects: 500, experience: 5, clients: 1200, warranty: 25 };
     const duration = 2000;
     const steps = 50;
     const stepDuration = duration / steps;
@@ -203,25 +205,25 @@ export default function LandingPage() {
 
   const testimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Likith M",
       role: "Homeowner",
-      content: "AquaShield Pro transformed our basement from a damp, unusable space into a dry, comfortable area. Their team was professional and the results exceeded our expectations.",
+      content: "Highlight Ventures transformed our basement from a damp, unusable space into a dry, comfortable area. Their team was professional and the results exceeded our expectations.",
       rating: 5,
-      image: "https://images.unsplash.com/photo-1494790108755-2616c04c107f?w=100&h=100&fit=crop&auto=format"
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6dtqv8-fhhNxjkOC95oWMGiwNIxGtPWnwQBCIaEYqaHbX4DatSa_bwm8P3MsuZFyr5uphfA&s"
     },
     {
-      name: "Michael Chen",
+      name: "Punith",
       role: "Property Manager",
-      content: "We've used AquaShield Pro for multiple commercial properties. Their expertise and reliability make them our go-to waterproofing contractor.",
+      content: "We've used Highlight Ventures for multiple commercial properties. Their expertise and reliability make them our go-to waterproofing contractor.",
       rating: 5,
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format"
+      image: "data:image/jpeg;base64,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"
     },
     {
-      name: "Emma Rodriguez",
+      name: "Yashwanth K",
       role: "Business Owner",
       content: "The team solved our persistent water issues with innovative solutions. The warranty and follow-up service give us complete peace of mind.",
       rating: 5,
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&auto=format"
+      image: "data:image/jpeg;base64,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"
     }
   ];
 
@@ -253,8 +255,25 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Modal for Get Free Quote */}
+      {showQuoteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 rounded-2xl shadow-2xl p-6 sm:p-10 w-full max-w-lg relative animate-fade-in">
+            <button
+              className="absolute top-3 right-3 text-white text-2xl font-bold hover:text-cyan-400 focus:outline-none"
+              onClick={() => setShowQuoteModal(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2 className="text-3xl font-bold text-white mb-4 text-center">Get Free Quote</h2>
+            <p className="text-gray-300 mb-6 text-center">Fill out the form and our team will get back to you soon.</p>
+            <ContactForm />
+          </div>
+        </div>
+      )}
       {/* Hero Section */}
-      <section className="relative h-[420px] sm:h-180 flex items-center justify-center overflow-hidden px-2 sm:px-0">
+      <section className="relative h-[420px] sm:h-180 flex flex-col items-center justify-center overflow-hidden px-2 sm:px-0 pt-20 sm:pt-0">
         <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
           <img 
             src={heroSlides[currentSlide].image} 
@@ -275,22 +294,25 @@ export default function LandingPage() {
         >
           <ChevronRight className="w-6 h-6 text-white" />
         </button>
-        <div className="relative z-10 text-center text-white px-2 sm:px-6 max-w-6xl">
-          <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 animate-fade-in leading-tight">
+        <div className="relative z-10 text-center text-white px-2 sm:px-6 max-w-6xl w-full">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-6 animate-fade-in leading-tight break-words">
             {heroSlides[currentSlide].title}
           </h1>
-          <p className="text-base sm:text-xl md:text-2xl mb-4 sm:mb-6 text-blue-100 font-medium">
+          <p className="text-base xs:text-lg sm:text-xl md:text-2xl mb-2 sm:mb-6 text-blue-100 font-medium">
             {heroSlides[currentSlide].subtitle}
           </p>
-          <p className="text-sm sm:text-lg mb-6 sm:mb-10 text-gray-200 max-w-2xl sm:max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xs xs:text-sm sm:text-lg mb-4 sm:mb-10 text-gray-200 max-w-xs xs:max-w-sm sm:max-w-2xl sm:max-w-4xl mx-auto leading-relaxed">
             {heroSlides[currentSlide].description}
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
-            <button className="block w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center justify-center space-x-3 text-base sm:text-lg">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center w-full">
+            <button
+              className="block w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center justify-center space-x-3 text-sm xs:text-base sm:text-lg"
+              onClick={openQuoteModal}
+            >
               <span>Get Free Quote</span>
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="block w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30 text-base sm:text-lg">
+            <button className="block w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm xs:text-base sm:text-lg">
               <span>Learn More</span>
             </button>
           </div>
@@ -300,7 +322,7 @@ export default function LandingPage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 xs:w-2.5 xs:h-2.5 sm:w-4 sm:h-4 rounded-full transition-all duration-300 ${
                 index === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'
               }`}
             />
@@ -619,13 +641,6 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1558618666-fbd19c830cd4?w=1200&h=600&fit=crop&auto=format" 
-            alt="Contact us"
-            className="w-full h-full object-cover opacity-20"
-          />
-        </div>
         <div className="container mx-auto px-6 text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
             Ready to Protect Your Property?
@@ -648,7 +663,7 @@ export default function LandingPage() {
       </section>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;

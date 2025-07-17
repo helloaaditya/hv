@@ -80,42 +80,38 @@ export default function Gallery() {
   };
 
   return (
-    <section className="relative py-22 px-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
+    <section className="relative py-22 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-64 h-64 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse delay-1000"></div>
+        <div className="absolute top-10 left-10 w-40 h-40 sm:top-20 sm:left-20 sm:w-64 sm:h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-40 h-40 sm:bottom-20 sm:right-20 sm:w-64 sm:h-64 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse delay-1000"></div>
       </div>
-
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
             <Award className="w-4 h-4 mr-2" />
             Our Completed Projects
           </div>
-          
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-600 bg-clip-text text-transparent mb-6">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-600 bg-clip-text text-transparent mb-4 sm:mb-6">
             Project Gallery
           </h2>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-md sm:max-w-3xl mx-auto mb-6 sm:mb-8">
             See the transformation of our waterproofing solutions across Bangalore. From residential to commercial projects, we deliver lasting results.
           </p>
         </div>
-
         {/* Featured Slider */}
-        <div className="mb-16">
-          <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl mx-auto">
-            <div className="relative h-96 md:h-[500px]">
-              <div className="absolute inset-0 grid grid-cols-2 gap-1">
+        <div className="mb-10 sm:mb-16">
+          <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden max-w-full sm:max-w-4xl mx-auto">
+            <div className="relative h-56 sm:h-96 md:h-[500px]">
+              <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-2 gap-1">
                 <div className="relative overflow-hidden">
                   <img 
                     src={gallery[currentSlide].before} 
                     alt="Before waterproofing" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
                     BEFORE
                   </div>
                 </div>
@@ -125,34 +121,31 @@ export default function Gallery() {
                     alt="After waterproofing" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-green-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
                     AFTER
                   </div>
                 </div>
               </div>
-              
               {/* Navigation */}
               <button 
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-blue-600 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
-              
               <button 
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-blue-600 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
-            
             {/* Project Details */}
-            <div className="p-8 bg-gradient-to-r from-blue-600 to-cyan-500 text-white">
-              <div className="flex justify-between items-start mb-4">
+            <div className="p-4 sm:p-8 bg-gradient-to-r from-blue-600 to-cyan-500 text-white">
+              <div className="flex flex-col sm:flex-row justify-between items-start mb-2 sm:mb-4 gap-2 sm:gap-0">
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">{gallery[currentSlide].desc}</h3>
-                  <div className="flex items-center text-blue-100 mb-2">
+                  <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">{gallery[currentSlide].desc}</h3>
+                  <div className="flex items-center text-blue-100 mb-1 sm:mb-2">
                     <MapPin className="w-4 h-4 mr-2" />
                     {gallery[currentSlide].location}
                   </div>
@@ -163,48 +156,45 @@ export default function Gallery() {
                 </div>
                 <button 
                   onClick={() => openModal(gallery[currentSlide], currentSlide)}
-                  className="bg-white text-blue-600 px-4 py-2 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center"
+                  className="bg-white text-blue-600 px-3 sm:px-4 py-2 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center text-xs sm:text-base"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   View Details
                 </button>
               </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
                 <div>
-                  <h4 className="font-semibold mb-2 text-blue-100">Problem:</h4>
-                  <p className="text-white">{gallery[currentSlide].problem}</p>
+                  <h4 className="font-semibold mb-1 sm:mb-2 text-blue-100 text-xs sm:text-base">Problem:</h4>
+                  <p className="text-white text-xs sm:text-base">{gallery[currentSlide].problem}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2 text-blue-100">Solution:</h4>
-                  <p className="text-white">{gallery[currentSlide].solution}</p>
+                  <h4 className="font-semibold mb-1 sm:mb-2 text-blue-100 text-xs sm:text-base">Solution:</h4>
+                  <p className="text-white text-xs sm:text-base">{gallery[currentSlide].solution}</p>
                 </div>
               </div>
             </div>
           </div>
-          
           {/* Slide Indicators */}
-          <div className="flex justify-center mt-6 space-x-2">
+          <div className="flex justify-center mt-4 sm:mt-6 space-x-1 sm:space-x-2">
             {gallery.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide ? 'bg-blue-600 w-8' : 'bg-gray-300'
+                className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${
+                  index === currentSlide ? 'bg-blue-600 w-6 sm:w-8' : 'bg-gray-300 w-2 sm:w-3'
                 }`}
               />
             ))}
           </div>
         </div>
-
         {/* Grid Gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-10 sm:mb-16">
           {gallery.map((item, idx) => (
             <div 
               key={idx}
               className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-36 sm:h-48 overflow-hidden">
                 <img 
                   src={item.after} 
                   alt={item.desc}
@@ -215,27 +205,26 @@ export default function Gallery() {
                   onClick={() => openModal(item, idx)}
                   className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 >
-                  <div className="bg-white text-blue-600 px-4 py-2 rounded-full font-semibold flex items-center">
+                  <div className="bg-white text-blue-600 px-3 sm:px-4 py-2 rounded-full font-semibold flex items-center text-xs sm:text-base">
                     <Eye className="w-4 h-4 mr-2" />
                     View Project
                   </div>
                 </button>
               </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-blue-900 mb-2">{item.desc}</h3>
-                <div className="flex items-center text-gray-600 mb-2">
+              <div className="p-4 sm:p-6">
+                <h3 className="text-base sm:text-xl font-bold text-blue-900 mb-1 sm:mb-2">{item.desc}</h3>
+                <div className="flex items-center text-gray-600 mb-1 sm:mb-2">
                   <MapPin className="w-4 h-4 mr-2" />
                   {item.location}
                 </div>
-                <div className="flex items-center text-gray-600 mb-4">
+                <div className="flex items-center text-gray-600 mb-2 sm:mb-4">
                   <Calendar className="w-4 h-4 mr-2" />
                   {item.duration}
                 </div>
-                <p className="text-gray-700 text-sm mb-4">{item.problem}</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-2 sm:mb-4">{item.problem}</p>
                 <button 
                   onClick={() => openModal(item, idx)}
-                  className="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center"
+                  className="text-blue-600 hover:text-blue-800 font-semibold text-xs sm:text-sm flex items-center"
                 >
                   View Details
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -244,10 +233,9 @@ export default function Gallery() {
             </div>
           ))}
         </div>
-
         {/* CTA Section */}
-        <div className="text-center bg-white rounded-3xl p-8 shadow-lg">
-          <h3 className="text-2xl font-bold text-blue-900 mb-4">Ready to Transform Your Property?</h3>
+        <div className="text-center bg-white rounded-3xl p-4 sm:p-8 shadow-lg">
+          <h3 className="text-lg sm:text-2xl font-bold text-blue-900 mb-2 sm:mb-4">Ready to Transform Your Property?</h3>
           <p className="text-gray-600 mb-6">Get expert waterproofing solutions for your home or business in Bangalore</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
