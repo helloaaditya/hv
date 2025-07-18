@@ -10,7 +10,13 @@ const Admin = require('./models/Admin');
 const Submission = require('./models/Submission');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://highlightventures.vercel.app',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.options('*', cors()); // Explicitly handle preflight requests
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
