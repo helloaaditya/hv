@@ -11,7 +11,7 @@ export default function Admin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    const res = await fetch('http://localhost:5000/api/admin/login', {
+    const res = await fetch('https://hv-4qa2.onrender.com/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(login),
@@ -27,7 +27,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (token) {
-      fetch('http://localhost:5000/api/admin/submissions', {
+      fetch('https://hv-4qa2.onrender.com/api/admin/submissions', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
