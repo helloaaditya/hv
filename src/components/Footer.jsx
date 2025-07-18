@@ -51,9 +51,9 @@ export default function Footer() {
         {/* Top Border Accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12">
             {/* Logo & Description */}
-            <div className="flex flex-col items-start space-y-4 lg:col-span-1 text-left">
+            <div className="flex flex-col items-center sm:items-center md:items-start space-y-4 lg:col-span-1 text-center sm:text-center md:text-left">
               <div className="group cursor-pointer transform hover:scale-105 transition-transform duration-300">
                 <div className="flex items-center justify-center sm:justify-center md:justify-start space-x-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -82,8 +82,46 @@ export default function Footer() {
                 </a>
               </div>
             </div>
+            {/* Quick Links (left column on mobile, left-aligned) */}
+            <div className="order-1 xs:order-1 lg:order-2 flex flex-col items-start space-y-4 text-left">
+              <h4 className="font-semibold text-lg text-white relative">
+                Quick Links
+                <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+              </h4>
+              <div className="space-y-2 sm:space-y-3">
+                {quickLinks.map(link => (
+                  <Link 
+                    key={link.name} 
+                    to={link.path} 
+                    className="group flex items-center text-gray-300 hover:text-blue-400 text-sm transition-all duration-300 hover:translate-x-1"
+                  >
+                    <FaChevronUp className="w-3 h-3 mr-2 rotate-90 group-hover:rotate-45 transition-transform duration-300 opacity-0 group-hover:opacity-100" />
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            {/* Our Services (right column on mobile, left-aligned) */}
+            <div className="order-2 xs:order-2 lg:order-3 flex flex-col items-start space-y-4 text-left">
+              <h4 className="font-semibold text-lg text-white relative">
+                Our Services
+                <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+              </h4>
+              <div className="space-y-1 sm:space-y-2">
+                {services.map((service, index) => (
+                  <div 
+                    key={service} 
+                    className="group flex items-center text-gray-300 text-sm hover:text-purple-400 transition-all duration-300 cursor-pointer"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform duration-300"></div>
+                    {service}
+                  </div>
+                ))}
+              </div>
+            </div>
             {/* Contact & Address */}
-            <div className="flex flex-col items-start space-y-4 text-left">
+            <div className="flex flex-col items-center sm:items-center md:items-start space-y-4 text-center sm:text-center md:text-left">
               <h4 className="font-semibold text-lg text-white relative">
                 Get In Touch
                 <div className="absolute -bottom-2 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 w-12 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
