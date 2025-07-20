@@ -70,14 +70,28 @@ app.post('/api/admin/login', async (req, res) => {
   res.json({ token });
 });
 
-// Save submission and send email
+// --- EMAIL NOTIFICATION SETUP ---
+// To use Gmail for notifications:
+// 1. Go to https://myaccount.google.com/apppasswords
+// 2. Generate an App Password for 'Mail' (if you have 2FA enabled)
+// 3. Set NOTIFY_EMAIL to your Gmail, NOTIFY_EMAIL_PASS to the app password in your environment variables
+// 4. Redeploy your backend
+//
+// If Gmail fails, fallback to Ethereal for testing (emails will not be delivered to real inbox, but you get a preview URL in logs)
+
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, message } = req.body;
   try {
     await Submission.create({ name, email, phone, message });
 
+    // Check for email credentials
+    if (!process.env.NOTIFY_EMAIL || !process.env.NOTIFY_EMAIL_PASS) {
+      console.error('Email credentials not set in environment variables.');
+      return res.status(500).json({ message: 'Email notification not configured. Submission saved.' });
+    }
+
     // Send notification email
-    const transporter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.NOTIFY_EMAIL,
@@ -85,14 +99,40 @@ app.post('/api/contact', async (req, res) => {
       }
     });
 
-    await transporter.sendMail({
-      from: process.env.NOTIFY_EMAIL,
-      to: process.env.NOTIFY_EMAIL,
-      subject: 'New Lead Submitted',
-      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
-    });
-
-    res.status(200).json({ message: 'Request sent successfully!' });
+    try {
+      await transporter.sendMail({
+        from: process.env.NOTIFY_EMAIL,
+        to: process.env.NOTIFY_EMAIL,
+        subject: 'New Lead Submitted',
+        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
+      });
+      res.status(200).json({ message: 'Request sent and email notification sent!' });
+    } catch (emailError) {
+      console.error('GMAIL EMAIL SEND ERROR:', emailError);
+      // Fallback: Try Ethereal for testing
+      try {
+        let testAccount = await nodemailer.createTestAccount();
+        let etherealTransport = nodemailer.createTransport({
+          host: 'smtp.ethereal.email',
+          port: 587,
+          auth: {
+            user: testAccount.user,
+            pass: testAccount.pass
+          }
+        });
+        let info = await etherealTransport.sendMail({
+          from: 'test@ethereal.email',
+          to: process.env.NOTIFY_EMAIL,
+          subject: 'New Lead Submitted (Ethereal Fallback)',
+          text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
+        });
+        console.log('Ethereal test email sent:', nodemailer.getTestMessageUrl(info));
+        res.status(200).json({ message: 'Request saved, Gmail email failed, but Ethereal test email sent.', etherealPreview: nodemailer.getTestMessageUrl(info) });
+      } catch (etherealError) {
+        console.error('ETHEREAL EMAIL SEND ERROR:', etherealError);
+        res.status(200).json({ message: 'Request saved, but all email notifications failed.', emailError: emailError.message, etherealError: etherealError.message });
+      }
+    }
   } catch (error) {
     console.error('CONTACT FORM ERROR:', error);
     res.status(500).json({ message: 'Failed to save submission', error: error.message });
