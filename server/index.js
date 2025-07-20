@@ -75,6 +75,23 @@ app.post('/api/contact', async (req, res) => {
   const { name, email, phone, message } = req.body;
   try {
     await Submission.create({ name, email, phone, message });
+
+    // Send notification email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.NOTIFY_EMAIL,
+        pass: process.env.NOTIFY_EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.NOTIFY_EMAIL,
+      to: process.env.NOTIFY_EMAIL,
+      subject: 'New Lead Submitted',
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
+    });
+
     res.status(200).json({ message: 'Request sent successfully!' });
   } catch (error) {
     console.error('CONTACT FORM ERROR:', error);

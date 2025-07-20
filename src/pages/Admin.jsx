@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Trash2, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 export default function Admin() {
   const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
@@ -7,6 +8,19 @@ export default function Admin() {
   const [login, setLogin] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSubmissions = () => {
+    if (token) {
+      fetch('https://hv-4qa2.onrender.com/api/admin/submissions', {
+        headers: { Authorization: token },
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) setSubmissions(data);
+        });
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,16 +40,34 @@ export default function Admin() {
   };
 
   useEffect(() => {
-    if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/submissions', {
-        headers: { Authorization: token },
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (Array.isArray(data)) setSubmissions(data);
-        });
-    }
+    fetchSubmissions();
+    // eslint-disable-next-line
   }, [token]);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this lead?')) return;
+    setLoading(true);
+    await fetch(`https://hv-4qa2.onrender.com/api/admin/submissions/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: token },
+    });
+    setLoading(false);
+    setSubmissions(submissions.filter(s => s._id !== id));
+  };
+
+  const handleExport = () => {
+    const data = submissions.map(s => ({
+      Name: s.name,
+      Email: s.email,
+      Phone: s.phone,
+      Message: s.message,
+      Date: new Date(s.date).toLocaleString(),
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+    XLSX.writeFile(wb, 'leads.xlsx');
+  };
 
   if (!token) {
     return (
@@ -76,12 +108,21 @@ export default function Admin() {
       <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-5xl border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-blue-700">Contact Form Submissions</h2>
-          <button
-            onClick={() => { setToken(''); localStorage.removeItem('adminToken'); }}
-            className="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
-          >
-            Logout
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleExport}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 flex items-center gap-2"
+              title="Export to Excel"
+            >
+              <FileSpreadsheet className="w-5 h-5" /> Export
+            </button>
+            <button
+              onClick={() => { setToken(''); localStorage.removeItem('adminToken'); }}
+              className="ml-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
+            >
+              Logout
+            </button>
+          </div>
         </div>
         {submissions.length === 0 ? (
           <div className="text-gray-500 text-center py-8 text-lg">No submissions yet.</div>
@@ -96,6 +137,7 @@ export default function Admin() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Message</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
                   <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">View</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Delete</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
@@ -109,6 +151,11 @@ export default function Admin() {
                     <td className="px-4 py-3 text-center">
                       <button onClick={() => setSelected(s)} className="text-blue-600 hover:text-blue-900" title="View Details">
                         <Eye className="w-5 h-5 inline" />
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button onClick={() => handleDelete(s._id)} className="text-red-600 hover:text-red-900" title="Delete Lead" disabled={loading}>
+                        <Trash2 className="w-5 h-5 inline" />
                       </button>
                     </td>
                   </tr>
