@@ -10,8 +10,22 @@ const Admin = require('./models/Admin');
 const Submission = require('./models/Submission');
 
 const app = express();
+const allowedOrigins = [
+  'https://highlightventures.in',
+  'https://www.highlightventures.in',
+  'https://highlightventures.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: 'https://highlightventures.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
