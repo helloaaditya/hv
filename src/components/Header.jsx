@@ -71,7 +71,7 @@ export default function Header({ openQuoteModal }) {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group" onClick={() => handleNavClick('Home')}>
-              <div className="relative">
+              <div className="relative flex items-center">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
                   <img 
                     src={logo} 
@@ -81,11 +81,11 @@ export default function Header({ openQuoteModal }) {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               </div>
-              <div className="hidden sm:block">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="block">
+                <div className="text-base sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Highlight Ventures
                 </div>
-                <div className="text-xs lg:text-sm text-gray-500 -mt-1">
+                <div className="hidden sm:block text-xs lg:text-sm text-gray-500 -mt-1">
                   Quality Flooring Solutions
                 </div>
               </div>

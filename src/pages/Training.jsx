@@ -71,8 +71,8 @@ export default function Training() {
           {/* Statistics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-10 sm:mb-16">
             {[
-              { number: '200+', label: 'Students Trained', icon: Users },
-              { number: '15+', label: 'Years Experience', icon: Award },
+              { number: '200+', label: 'Workers Trained', icon: Users },
+              { number: '5+', label: 'Years Experience', icon: Award },
               { number: '24/7', label: 'Support Available', icon: CheckCircle },
               { number: '100%', label: 'Practical Training', icon: Star }
             ].map((stat, index) => (

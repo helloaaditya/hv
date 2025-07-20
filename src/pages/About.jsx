@@ -26,7 +26,7 @@ export default function About() {
     {
       icon: Users,
       title: "Expert & Experienced Team",
-      description: "Skilled professionals with 10+ years experience",
+      description: "Skilled professionals with 5+ years experience",
       color: "from-purple-500 to-pink-500"
     },
     {
@@ -44,7 +44,7 @@ export default function About() {
   ];
 
   const stats = [
-    { number: "10+", label: "Years Experience", icon: Trophy },
+    { number: "5+", label: "Years Experience", icon: Trophy },
     { number: "500+", label: "Projects Completed", icon: CheckCircle },
     { number: "100%", label: "Customer Satisfaction", icon: Star },
     { number: "24/7", label: "Support Available", icon: Shield }
@@ -87,7 +87,7 @@ export default function About() {
             <p className={`text-base sm:text-lg md:text-xl text-gray-300 max-w-xl sm:max-w-4xl mx-auto leading-relaxed transition-all duration-700 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
             }`} style={{ transitionDelay: '400ms' }}>
-              With over 10 years of experience, Waterproofing Co. is committed to providing top-quality waterproofing solutions for homes and businesses. Our values are rooted in integrity, reliability, and customer satisfaction. We use the latest technology and best materials to ensure lasting results.
+              With over 5 years of experience, Highlight Ventures is committed to providing top-quality waterproofing solutions for homes and businesses. Our values are rooted in integrity, reliability, and customer satisfaction. We use the latest technology and best materials to ensure lasting results.
             </p>
           </div>
           {/* Stats Section */}

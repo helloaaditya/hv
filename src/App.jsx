@@ -11,6 +11,7 @@ import Training from './pages/Training';
 import Admin from './pages/Admin';
 import ContactForm from './components/ContactForm';
 import WhatsAppWidget from './components/WhatsAppWidget';
+import Sitemap from './pages/Sitemap';
 
 function App() {
   const [showQuoteModal, setShowQuoteModal] = useState(false);
@@ -48,6 +49,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/training" element={<Training />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/sitemap" element={<Sitemap />} />
         </Routes>
       </main>
       <Footer />

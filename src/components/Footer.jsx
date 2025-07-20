@@ -177,9 +177,9 @@ export default function Footer() {
                 </p>
               </div>
               <div className="flex flex-wrap justify-center sm:justify-end items-center space-x-4 sm:space-x-6 text-xs text-gray-400 mt-2 sm:mt-0">
-                <span className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Privacy Policy</span>
-                <span className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Terms of Service</span>
-                <span className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Sitemap</span>
+                <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Privacy Policy</a>
+                <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Terms of Service</a>
+                <Link to="/sitemap" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Sitemap</Link>
               </div>
             </div>
           </div>

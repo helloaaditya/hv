@@ -89,7 +89,7 @@ export default function Services({ openQuoteModal }) {
               onMouseLeave={() => setHoveredService(null)}
             >
               <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradient} shadow-lg group-hover/item:shadow-xl transition-shadow duration-300`} />
-              <span className="text-gray-200 flex-1 group-hover/item:text-white transition-colors duration-300">
+              <span className="font-bold text-base sm:text-lg md:text-xl bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-sm flex-1 group-hover/item:text-white transition-colors duration-300">
                 {service}
               </span>
               <ArrowRight className="w-5 h-5 text-gray-400 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all duration-300" />
@@ -113,18 +113,10 @@ export default function Services({ openQuoteModal }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 w-40 h-40 sm:w-64 sm:h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
-      
+    <div className="min-h-screen bg-white relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 py-22 sm:py-20">
         {/* Hero Section */}
         <div className="text-center mb-10 sm:mb-16">
-          
           <h1 className={`text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 transition-all duration-700 transform ${
             animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`} style={{ transitionDelay: '200ms' }}>
@@ -132,15 +124,13 @@ export default function Services({ openQuoteModal }) {
               Our Services
             </span>
           </h1>
-          
-          <p className={`text-base sm:text-lg md:text-xl text-gray-300 max-w-xl sm:max-w-2xl mx-auto leading-relaxed transition-all duration-700 transform ${
+          <p className={`text-base sm:text-lg md:text-xl text-gray-700 max-w-xl sm:max-w-2xl mx-auto leading-relaxed transition-all duration-700 transform ${
             animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`} style={{ transitionDelay: '400ms' }}>
             Discover our premium range of flooring and waterproofing solutions, 
             engineered with cutting-edge technology and unmatched quality.
           </p>
         </div>
-        
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-2xl md:max-w-7xl mx-auto">
           <ServiceCard
@@ -151,7 +141,6 @@ export default function Services({ openQuoteModal }) {
             delay={600}
             openQuoteModal={openQuoteModal}
           />
-          
           <ServiceCard
             title="Waterproofing Services"
             services={waterproofingServices}
@@ -161,7 +150,6 @@ export default function Services({ openQuoteModal }) {
             openQuoteModal={openQuoteModal}
           />
         </div>
-        
         {/* Bottom CTA */}
         <div className={`text-center mt-14 sm:mt-20 transition-all duration-700 transform ${
           animationTrigger ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'

@@ -11,12 +11,12 @@ export default function LandingPage({ openQuoteModal }) {
     projects: 0,
     experience: 0,
     clients: 0,
-    warranty: 0
+    reviews: 0
   });
 
   // Counter animation
   useEffect(() => {
-    const targets = { projects: 500, experience: 5, clients: 1200, warranty: 25 };
+    const targets = { projects: 500, experience: 5, clients: 1200, reviews: 4.5 };
     const duration = 2000;
     const steps = 50;
     const stepDuration = duration / steps;
@@ -32,7 +32,7 @@ export default function LandingPage({ openQuoteModal }) {
           current = target;
           clearInterval(intervals[Object.keys(targets).indexOf(key)]);
         }
-        setCounters(prev => ({ ...prev, [key]: Math.floor(current) }));
+        setCounters(prev => ({ ...prev, [key]: key === 'reviews' ? Math.round(current * 10) / 10 : Math.floor(current) }));
       }, stepDuration);
     });
 
@@ -61,22 +61,22 @@ export default function LandingPage({ openQuoteModal }) {
   // Hero slider with real images
   const heroSlides = [
     {
-      title: "Professional Waterproofing Solutions",
+      title: "Professional Waterproofing Solutions, Bangalore",
       subtitle: "Protect Your Property with Advanced Technology",
-      description: "Expert waterproofing services for residential and commercial properties. 15+ years of experience with guaranteed results.",
-      image: "https://images.unsplash.com/photo-1596859777303-7cd0c841106d?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      description: "Expert waterproofing services for residential and commercial properties. 5+ years of experience with guaranteed results.",
+      image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&w=1600&q=80" // Workers applying waterproofing membrane
     },
     {
       title: "Basement Waterproofing Experts",
       subtitle: "Keep Your Foundation Dry & Secure",
       description: "Comprehensive basement waterproofing solutions using cutting-edge materials and proven techniques.",
-      image: "https://images.unsplash.com/photo-1511747813271-99d6710c197d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZsb29yfGVufDB8fDB8fHww"
+      image: "https://plus.unsplash.com/premium_photo-1751728435152-2017b8349c96?q=80&w=1656&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // New: workers applying waterproofing in a basement
     },
     {
       title: "Commercial Waterproofing Services",
       subtitle: "Large-Scale Protection Solutions",
       description: "Professional waterproofing for commercial buildings, warehouses, and industrial facilities.",
-      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=800&fit=crop&auto=format"
+      image: "https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&w=1600&q=80" // Construction site with workers and scaffolding
     }
   ];
 
@@ -85,7 +85,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Luxury Residential Basement",
       location: "Bengaluru, Karnataka",
       description: "Complete basement waterproofing with premium drainage system and moisture control.",
-      image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&h=400&fit=crop&auto=format",
+      image: "https://plus.unsplash.com/premium_photo-1661877360520-f70603f7c0d8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8THV4dXJ5JTIwUmVzaWRlbnRpYWwlMjBCYXNlbWVudHxlbnwwfHwwfHx8MA%3D%3D", // Realistic: workers waterproofing a basement wall
       category: "Residential",
       completedDate: "March 2024",
       features: ["Interior Drainage", "Vapor Barrier", "Dehumidification System"]
@@ -94,7 +94,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Commercial Warehouse Complex",
       location: "Mumbai, Maharashtra",
       description: "Large-scale waterproofing for 50,000 sq ft warehouse facility with advanced membrane system.",
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600&h=400&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1568210405373-e569f2134ad1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Q29tbWVyY2lhbCUyMFdhcmVob3VzZSUyMENvbXBsZXh8ZW58MHx8MHx8fDA%3D", // Realistic: commercial waterproofing
       category: "Commercial",
       completedDate: "February 2024",
       features: ["Membrane Waterproofing", "Structural Reinforcement", "Drainage Solutions"]
@@ -103,7 +103,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Heritage Building Restoration",
       location: "Delhi, NCR",
       description: "Specialized waterproofing for historic structure preserving architectural integrity.",
-      image: "https://images.unsplash.com/photo-1558618666-fbd19c830cd4?w=600&h=400&fit=crop&auto=format",
+      image: "https://images.pexels.com/photos/210158/pexels-photo-210158.jpeg?auto=compress&w=800&q=80", // Realistic: restoration work
       category: "Heritage",
       completedDate: "January 2024",
       features: ["Heritage Preservation", "Custom Solutions", "Structural Protection"]
@@ -112,7 +112,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Multi-Story Residential Complex",
       location: "Hyderabad, Telangana",
       description: "Comprehensive waterproofing for 12-story residential building with terrace garden.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop&auto=format",
+      image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&w=800&q=80", // Realistic: high-rise waterproofing
       category: "Residential",
       completedDate: "December 2023",
       features: ["Roof Waterproofing", "Terrace Gardens", "Facade Protection"]
@@ -121,7 +121,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Industrial Manufacturing Plant",
       location: "Chennai, Tamil Nadu",
       description: "Heavy-duty waterproofing for chemical processing facility with specialized coatings.",
-      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=400&fit=crop&auto=format",
+      image: "https://images.pexels.com/photos/209251/pexels-photo-209251.jpeg?auto=compress&w=800&q=80", // Realistic: industrial waterproofing
       category: "Industrial",
       completedDate: "November 2023",
       features: ["Chemical Resistant Coatings", "Floor Waterproofing", "Containment Systems"]
@@ -130,7 +130,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Luxury Villa Swimming Pool",
       location: "Goa",
       description: "Premium waterproofing for infinity pool with integrated water features.",
-      image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop&auto=format",
+      image: "https://images.pexels.com/photos/261327/pexels-photo-261327.jpeg?auto=compress&w=800&q=80", // Realistic: pool waterproofing
       category: "Luxury",
       completedDate: "October 2023",
       features: ["Pool Waterproofing", "Water Features", "Deck Protection"]
@@ -140,7 +140,7 @@ export default function LandingPage({ openQuoteModal }) {
   const faqs = [
     {
       question: "How long does waterproofing last?",
-      answer: "Our waterproofing solutions come with a 25-year warranty and are designed to last for decades. The longevity depends on factors like material quality, installation technique, and environmental conditions. With proper maintenance, our systems can protect your property for 30+ years."
+      answer: "Our waterproofing solutions are designed to last for decades. The longevity depends on factors like material quality, installation technique, and environmental conditions. With proper maintenance, our systems can protect your property for 30+ years."
     },
     {
       question: "What's included in a free inspection?",
@@ -164,7 +164,7 @@ export default function LandingPage({ openQuoteModal }) {
     },
     {
       question: "What warranty do you provide?",
-      answer: "We offer industry-leading warranties: 25 years on structural waterproofing, 15 years on basement systems, 10 years on roof waterproofing, and 5 years on repair work. Our warranties cover both materials and workmanship, with free annual inspections."
+      answer: "We offer warranties on our waterproofing systems. Please contact us for specific details about coverage for your project."
     },
     {
       question: "Do you use eco-friendly waterproofing materials?",
@@ -178,7 +178,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Basement Waterproofing",
       description: "Complete basement protection with interior and exterior waterproofing solutions.",
       features: ["Interior Drainage", "Exterior Sealing", "Sump Pump Installation"],
-      image: "https://images.unsplash.com/photo-1558618666-fbd19c830cd4?w=400&h=300&fit=crop&auto=format"
+      image: "https://plus.unsplash.com/premium_photo-1751728435152-2017b8349c96?q=80&w=1656&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       icon: <Shield className="w-8 h-8" />,
@@ -216,14 +216,7 @@ export default function LandingPage({ openQuoteModal }) {
       role: "Property Manager",
       content: "We've used Highlight Ventures for multiple commercial properties. Their expertise and reliability make them our go-to waterproofing contractor.",
       rating: 5,
-      image: "data:image/jpeg;base64,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"
-    },
-    {
-      name: "Yashwanth K",
-      role: "Business Owner",
-      content: "The team solved our persistent water issues with innovative solutions. The warranty and follow-up service give us complete peace of mind.",
-      rating: 5,
-      image: "data:image/jpeg;base64,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"
+      image: "data:image/jpeg;base64,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"
     }
   ];
 
@@ -354,10 +347,11 @@ export default function LandingPage({ openQuoteModal }) {
               <div className="text-blue-100 text-xs sm:text-lg font-medium">Happy Clients</div>
             </div>
             <div className="transform hover:scale-110 transition-all duration-300 animate-on-scroll">
-              <div className="text-2xl sm:text-4xl md:text-5xl font-bold mb-1 sm:mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                {counters.warranty}
+              <div className="flex items-center justify-center gap-2 text-2xl sm:text-4xl md:text-5xl font-bold mb-1 sm:mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                {counters.reviews}
+                <Star className="w-7 h-7 sm:w-9 sm:h-9 text-yellow-400 inline-block" />
               </div>
-              <div className="text-blue-100 text-xs sm:text-lg font-medium">Year Warranty</div>
+              <div className="text-blue-100 text-xs sm:text-lg font-medium">Average Rating</div>
             </div>
           </div>
         </div>
@@ -541,8 +535,8 @@ export default function LandingPage({ openQuoteModal }) {
                     <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-3">25-Year Warranty</h3>
-                    <p className="text-gray-600 leading-relaxed text-xs sm:text-base">Industry-leading warranty coverage on all our waterproofing services and premium materials for long-lasting protection.</p>
+                    <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-3">Warranty</h3>
+                    <p className="text-gray-600 leading-relaxed text-xs sm:text-base">We provide warranty coverage on our waterproofing services and premium materials. Contact us for details.</p>
                   </div>
                 </div>
               </div>
