@@ -84,55 +84,35 @@ app.post('/api/contact', async (req, res) => {
   try {
     await Submission.create({ name, email, phone, message });
 
-    // Check for email credentials
-    if (!process.env.NOTIFY_EMAIL || !process.env.NOTIFY_EMAIL_PASS) {
-      console.error('Email credentials not set in environment variables.');
-      return res.status(500).json({ message: 'Email notification not configured. Submission saved.' });
-    }
+    // Respond to the frontend immediately
+    res.status(200).json({ message: 'Request sent successfully!' });
 
-    // Send notification email
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.NOTIFY_EMAIL,
-        pass: process.env.NOTIFY_EMAIL_PASS
-      }
-    });
-
-    try {
-      await transporter.sendMail({
-        from: process.env.NOTIFY_EMAIL,
-        to: process.env.NOTIFY_EMAIL,
-        subject: 'New Lead Submitted',
-        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
-      });
-      res.status(200).json({ message: 'Request sent and email notification sent!' });
-    } catch (emailError) {
-      console.error('GMAIL EMAIL SEND ERROR:', emailError);
-      // Fallback: Try Ethereal for testing
+    // Send email in the background (non-blocking)
+    setImmediate(async () => {
       try {
-        let testAccount = await nodemailer.createTestAccount();
-        let etherealTransport = nodemailer.createTransport({
-          host: 'smtp.ethereal.email',
-          port: 587,
+        if (!process.env.NOTIFY_EMAIL || !process.env.NOTIFY_EMAIL_PASS) {
+          console.error('Email credentials not set in environment variables.');
+          return;
+        }
+        let transporter = nodemailer.createTransport({
+          service: 'gmail',
           auth: {
-            user: testAccount.user,
-            pass: testAccount.pass
+            user: process.env.NOTIFY_EMAIL,
+            pass: process.env.NOTIFY_EMAIL_PASS
           }
         });
-        let info = await etherealTransport.sendMail({
-          from: 'test@ethereal.email',
+
+        await transporter.sendMail({
+          from: process.env.NOTIFY_EMAIL,
           to: process.env.NOTIFY_EMAIL,
-          subject: 'New Lead Submitted (Ethereal Fallback)',
-          text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`
+          subject: 'New Lead from Highlight Ventures',
+          text: `You have received a new lead:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\n\nMessage:\n${message}\n\nSubmitted at: ${new Date().toLocaleString()}`
         });
-        console.log('Ethereal test email sent:', nodemailer.getTestMessageUrl(info));
-        res.status(200).json({ message: 'Request saved, Gmail email failed, but Ethereal test email sent.', etherealPreview: nodemailer.getTestMessageUrl(info) });
-      } catch (etherealError) {
-        console.error('ETHEREAL EMAIL SEND ERROR:', etherealError);
-        res.status(200).json({ message: 'Request saved, but all email notifications failed.', emailError: emailError.message, etherealError: etherealError.message });
+        console.log('Notification email sent successfully.');
+      } catch (emailError) {
+        console.error('GMAIL EMAIL SEND ERROR (background):', emailError);
       }
-    }
+    });
   } catch (error) {
     console.error('CONTACT FORM ERROR:', error);
     res.status(500).json({ message: 'Failed to save submission', error: error.message });
