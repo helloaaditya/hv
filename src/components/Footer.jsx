@@ -67,14 +67,14 @@ export default function Footer() {
                 </div>
               </div>
               <p className="text-gray-300 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
-                We provide expert waterproofing and flooring solutions for homes and businesses in Bengaluru. 
+                We provide expert waterproofing and flooring solutions for homes and businesses in Bengaluru.
                 <span className="text-blue-400 font-medium"> Quality, reliability, and customer satisfaction</span> are our top priorities.
               </p>
               {/* Social Media with Hover Effects */}
               <div className="flex space-x-4 mt-2 sm:mt-4 justify-center md:justify-start">
-                <a 
-                  href="https://instagram.com/highlight_ventures_0317" 
-                  target="_blank" 
+                <a
+                  href="https://instagram.com/highlight_ventures_0317"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="group p-2 sm:p-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
                 >
@@ -90,9 +90,9 @@ export default function Footer() {
               </h4>
               <div className="space-y-2 sm:space-y-3">
                 {quickLinks.map(link => (
-                  <Link 
-                    key={link.name} 
-                    to={link.path} 
+                  <Link
+                    key={link.name}
+                    to={link.path}
                     className="group flex items-center text-gray-300 hover:text-blue-400 text-sm transition-all duration-300 hover:translate-x-1"
                   >
                     <FaChevronUp className="w-3 h-3 mr-2 rotate-90 group-hover:rotate-45 transition-transform duration-300 opacity-0 group-hover:opacity-100" />
@@ -109,8 +109,8 @@ export default function Footer() {
               </h4>
               <div className="space-y-1 sm:space-y-2">
                 {services.map((service, index) => (
-                  <div 
-                    key={service} 
+                  <div
+                    key={service}
                     className="group flex items-center text-gray-300 text-sm hover:text-purple-400 transition-all duration-300 cursor-pointer"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
@@ -128,8 +128,8 @@ export default function Footer() {
               </h4>
               <div className="space-y-3 sm:space-y-4">
                 {/* Phone */}
-                <a 
-                  href="tel:+919731535216" 
+                <a
+                  href="tel:+919731535216"
                   className="group flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300 hover:text-green-400 transition-all duration-300 hover:translate-x-1"
                 >
                   <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-all duration-300">
@@ -138,8 +138,8 @@ export default function Footer() {
                   <span className="text-sm">9731535216</span>
                 </a>
                 {/* Email */}
-                <a 
-                  href="mailto:Highlightventures0317@gmail.com" 
+                <a
+                  href="mailto:Highlightventures0317@gmail.com"
                   className="group flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300 hover:text-blue-400 transition-all duration-300 hover:translate-x-1"
                 >
                   <div className="p-2 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-all duration-300">
@@ -148,8 +148,13 @@ export default function Footer() {
                   <span className="text-sm">Highlightventures0317@gmail.com</span>
                 </a>
                 {/* Address */}
-                <div className="group flex items-start justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300 hover:text-purple-400 transition-all duration-300">
-                  <div className="p-2 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-all duration-300 mt-1">
+                <a
+                  href="https://www.google.com/maps?q=No.786/1,+3rd+main,+2nd+cross,+beside+Muneshwara+Temple,+Telecom+Layout,+Srirampura,+Jakkur,+Bengaluru,+Karnataka+560064"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start justify-center group-hover:bg-blue-500/30 md:justify-start space-x-2 sm:space-x-3 text-gray-300 hover:text-purple-400 transition-all duration-300"
+                >
+                  <div className="p-2 bg-purple-500/20 group-hover:bg-blue-500/30 rounded-lg group-hover:bg-purple-500/30 transition-all duration-300 mt-1">
                     <FaMapMarkerAlt className="w-4 h-4 text-purple-400" />
                   </div>
                   <div className="text-sm leading-relaxed text-center md:text-left">
@@ -161,44 +166,44 @@ export default function Footer() {
                       Jakkur, Bengaluru, Karnataka 560064
                     </address>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Bottom Section */}
-          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-700/50">
-            <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center space-y-3 sm:space-y-0 text-center sm:text-left">
-              <div className="text-center sm:text-left">
-                <p className="text-gray-400 text-xs sm:text-sm">
-                  &copy; {new Date().getFullYear()} Highlight Ventures. All rights reserved.
-                </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  Crafted with ❤️ for quality flooring and waterproofing solutions
-                </p>
-              </div>
-              <div className="flex flex-wrap justify-center sm:justify-end items-center space-x-4 sm:space-x-6 text-xs text-gray-400 mt-2 sm:mt-0">
-                <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Privacy Policy</a>
-                <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Terms of Service</a>
-                <Link to="/sitemap" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Sitemap</Link>
-              </div>
+                </a>
             </div>
           </div>
         </div>
-      </footer>
+        {/* Bottom Section */}
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-700/50">
+          <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center space-y-3 sm:space-y-0 text-center sm:text-left">
+            <div className="text-center sm:text-left">
+              <p className="text-gray-400 text-xs sm:text-sm">
+                &copy; {new Date().getFullYear()} Highlight Ventures. All rights reserved.
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                Crafted with ❤️ for quality flooring and waterproofing solutions
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center sm:justify-end items-center space-x-4 sm:space-x-6 text-xs text-gray-400 mt-2 sm:mt-0">
+              <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Privacy Policy</a>
+              <a href="/docs/legal.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Terms of Service</a>
+              <Link to="/sitemap" className="hover:text-blue-400 cursor-pointer transition-colors duration-300">Sitemap</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer >
 
-      {/* Back to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-50 p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-110 ${
-          showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
-        }`}
-        style={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
-        }}
+      {/* Back to Top Button */ }
+      < button
+  onClick = { scrollToTop }
+  className = {`fixed bottom-8 right-8 z-50 p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-110 ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
+    }`
+}
+style = {{
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
+}}
       >
-        <FaArrowUp className="w-5 h-5 animate-bounce" />
-      </button>
+  <FaArrowUp className="w-5 h-5 animate-bounce" />
+      </button >
     </>
   );
 }

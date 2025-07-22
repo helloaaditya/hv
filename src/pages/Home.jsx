@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Shield, Phone, Mail, Star, CheckCircle, Users, Calendar, Award, ArrowRight, ChevronLeft, Plus, Minus, Eye, ExternalLink } from 'lucide-react';
 import ContactForm from '../components/ContactForm';
+import TestimonialsSection from './TestimonialsSection';
 
 export default function LandingPage({ openQuoteModal }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -593,44 +594,7 @@ export default function LandingPage({ openQuoteModal }) {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 px-12 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-              What Our <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Clients Say</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Don't just take our word for it - hear from our satisfied customers who trust us with their most valuable assets
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:-translate-y-4 transition-all duration-500 animate-on-scroll">
-                <div className="flex items-center mb-8">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <h4 className="font-bold text-gray-800 text-lg">{testimonial.name}</h4>
-                    <p className="text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-1 mb-6">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                
-                <p className="text-gray-700 italic text-lg leading-relaxed">"{testimonial.content}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TestimonialsSection/>
 
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-white relative overflow-hidden">
