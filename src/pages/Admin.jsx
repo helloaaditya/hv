@@ -11,6 +11,10 @@ export default function Admin() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('submissions'); // 'submissions' or 'testimonials'
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null); // null for single, 'all' for all, or array for bulk
 
   const fetchSubmissions = () => {
     if (token) {
@@ -60,24 +64,110 @@ export default function Admin() {
   }, [token]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    setDeleteTarget(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    
     setLoading(true);
-    
-    const endpoint = activeTab === 'submissions' 
-      ? `https://hv-4qa2.onrender.com/api/admin/submissions/${id}`
-      : `https://hv-4qa2.onrender.com/api/admin/testimonials/${id}`;
-    
-    await fetch(endpoint, {
-      method: 'DELETE',
-      headers: { Authorization: token },
-    });
-    setLoading(false);
-    
-    if (activeTab === 'submissions') {
-      setSubmissions(submissions.filter(s => s._id !== id));
-    } else {
-      setTestimonials(testimonials.filter(t => t._id !== id));
+    try {
+      if (deleteTarget === 'all') {
+        // Delete all items
+        const endpoint = activeTab === 'submissions' 
+          ? 'https://hv-4qa2.onrender.com/api/admin/submissions/all'
+          : 'https://hv-4qa2.onrender.com/api/admin/testimonials/all';
+        
+        await fetch(endpoint, {
+          method: 'DELETE',
+          headers: { Authorization: token },
+        });
+        
+        if (activeTab === 'submissions') {
+          setSubmissions([]);
+        } else {
+          setTestimonials([]);
+        }
+      } else if (Array.isArray(deleteTarget)) {
+        // Bulk delete selected items
+        const endpoint = activeTab === 'submissions' 
+          ? 'https://hv-4qa2.onrender.com/api/admin/submissions/bulk'
+          : 'https://hv-4qa2.onrender.com/api/admin/testimonials/bulk';
+        
+        await fetch(endpoint, {
+          method: 'DELETE',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: token 
+          },
+          body: JSON.stringify({ ids: deleteTarget }),
+        });
+        
+        if (activeTab === 'submissions') {
+          setSubmissions(submissions.filter(s => !deleteTarget.includes(s._id)));
+        } else {
+          setTestimonials(testimonials.filter(t => !deleteTarget.includes(t._id)));
+        }
+      } else {
+        // Delete single item
+        const endpoint = activeTab === 'submissions' 
+          ? `https://hv-4qa2.onrender.com/api/admin/submissions/${deleteTarget}`
+          : `https://hv-4qa2.onrender.com/api/admin/testimonials/${deleteTarget}`;
+        
+        await fetch(endpoint, {
+          method: 'DELETE',
+          headers: { Authorization: token },
+        });
+        
+        if (activeTab === 'submissions') {
+          setSubmissions(submissions.filter(s => s._id !== deleteTarget));
+        } else {
+          setTestimonials(testimonials.filter(t => t._id !== deleteTarget));
+        }
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+    } finally {
+      setLoading(false);
+      setShowDeleteConfirm(false);
+      setDeleteTarget(null);
+      setSelectedItems(new Set());
+      setSelectAll(false);
     }
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItems(new Set());
+      setSelectAll(false);
+    } else {
+      const items = activeTab === 'submissions' ? submissions : testimonials;
+      setSelectedItems(new Set(items.map(item => item._id)));
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectItem = (id) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedItems(newSelected);
+    setSelectAll(newSelected.size === (activeTab === 'submissions' ? submissions.length : testimonials.length));
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedItems.size === 0) return;
+    setDeleteTarget(Array.from(selectedItems));
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteAll = () => {
+    setDeleteTarget('all');
+    setShowDeleteConfirm(true);
   };
 
   const handleApproveTestimonial = async (id, isApproved) => {
@@ -177,8 +267,15 @@ export default function Admin() {
               <FileSpreadsheet className="w-5 h-5" /> Export
             </button>
             <button
+              onClick={handleDeleteAll}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
+              disabled={loading || (activeTab === 'submissions' ? submissions.length === 0 : testimonials.length === 0)}
+            >
+              Delete All
+            </button>
+            <button
               onClick={() => { setToken(''); localStorage.removeItem('adminToken'); }}
-              className="ml-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
+              className="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
             >
               Logout
             </button>
@@ -217,22 +314,67 @@ export default function Admin() {
             {submissions.length === 0 ? (
               <div className="text-gray-500 text-center py-8 text-lg">No submissions yet.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-blue-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Phone</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Message</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">View</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Delete</th>
-                    </tr>
-                  </thead>
+              <>
+                {/* Bulk Actions */}
+                <div className="mb-4 flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm font-medium text-gray-700">Select All</span>
+                    </label>
+                    {selectedItems.size > 0 && (
+                      <span className="text-sm text-gray-600">
+                        {selectedItems.size} item(s) selected
+                      </span>
+                    )}
+                  </div>
+                  {selectedItems.size > 0 && (
+                    <button
+                      onClick={handleBulkDelete}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
+                      disabled={loading}
+                    >
+                      Delete Selected ({selectedItems.size})
+                    </button>
+                  )}
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={handleSelectAll}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Phone</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Message</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">View</th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Delete</th>
+                      </tr>
+                    </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
                     {submissions.map(s => (
                       <tr key={s._id} className="hover:bg-blue-50 transition">
+                        <td className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.has(s._id)}
+                            onChange={() => handleSelectItem(s._id)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </td>
                         <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{s.name}</td>
                         <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{s.email}</td>
                         <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{s.phone || '-'}</td>
@@ -263,23 +405,68 @@ export default function Admin() {
             {testimonials.length === 0 ? (
               <div className="text-gray-500 text-center py-8 text-lg">No testimonials yet.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-blue-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Role</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Rating</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Content</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
+              <>
+                {/* Bulk Actions */}
+                <div className="mb-4 flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm font-medium text-gray-700">Select All</span>
+                    </label>
+                    {selectedItems.size > 0 && (
+                      <span className="text-sm text-gray-600">
+                        {selectedItems.size} item(s) selected
+                      </span>
+                    )}
+                  </div>
+                  {selectedItems.size > 0 && (
+                    <button
+                      onClick={handleBulkDelete}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
+                      disabled={loading}
+                    >
+                      Delete Selected ({selectedItems.size})
+                    </button>
+                  )}
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={handleSelectAll}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Role</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Rating</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Content</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
                     {testimonials.map(t => (
                       <tr key={t._id} className="hover:bg-blue-50 transition">
+                        <td className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.has(t._id)}
+                            onChange={() => handleSelectItem(t._id)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </td>
                         <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{t.name}</td>
                         <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{t.email}</td>
                         <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{t.role}</td>
@@ -391,6 +578,48 @@ export default function Admin() {
                 </>
               )}
               <div><span className="font-semibold text-gray-700">Date:</span> {new Date(selected.date).toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-left animate-fade-in relative">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {deleteTarget === 'all' 
+                  ? `Delete All ${activeTab === 'submissions' ? 'Submissions' : 'Testimonials'}?`
+                  : Array.isArray(deleteTarget)
+                  ? `Delete ${deleteTarget.length} Selected ${activeTab === 'submissions' ? 'Submission' : 'Testimonial'}${deleteTarget.length > 1 ? 's' : ''}?`
+                  : `Delete ${activeTab === 'submissions' ? 'Submission' : 'Testimonial'}?`
+                }
+              </h3>
+              <p className="text-sm text-gray-500 mb-6">
+                This action cannot be undone. This will permanently delete the {activeTab === 'submissions' ? 'submission' : 'testimonial'}{deleteTarget === 'all' || (Array.isArray(deleteTarget) && deleteTarget.length > 1) ? 's' : ''} from the database.
+              </p>
+              <div className="flex justify-center space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteTarget(null);
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={loading}
+                  className="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  {loading ? 'Deleting...' : 'Delete Permanently'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

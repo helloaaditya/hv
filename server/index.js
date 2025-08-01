@@ -72,13 +72,17 @@ app.post('/api/admin/login', async (req, res) => {
 });
 
 // --- EMAIL NOTIFICATION SETUP ---
-// To use Gmail for notifications:
-// 1. Go to https://myaccount.google.com/apppasswords
-// 2. Generate an App Password for 'Mail' (if you have 2FA enabled)
-// 3. Set NOTIFY_EMAIL to your Gmail, NOTIFY_EMAIL_PASS to the app password in your environment variables
-// 4. Redeploy your backend
+// Option 1: Gmail with App Password (requires 2FA enabled)
+// 1. Enable 2-Factor Authentication: https://myaccount.google.com/security
+// 2. Generate App Password: https://myaccount.google.com/apppasswords
+// 3. Set NOTIFY_EMAIL and NOTIFY_EMAIL_PASS in environment variables
 //
-// If Gmail fails, fallback to Ethereal for testing (emails will not be delivered to real inbox, but you get a preview URL in logs)
+// Option 2: Gmail with OAuth2 (more secure, no app password needed)
+// 1. Set up OAuth2 credentials in Google Cloud Console
+// 2. Set NOTIFY_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
+//
+// Option 3: Other email providers (Outlook, Yahoo, etc.)
+// Update the transporter configuration below
 
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, message } = req.body;
@@ -91,17 +95,56 @@ app.post('/api/contact', async (req, res) => {
     // Send email in the background (non-blocking)
     setImmediate(async () => {
       try {
-        if (!process.env.NOTIFY_EMAIL || !process.env.NOTIFY_EMAIL_PASS) {
+        let transporter;
+        
+        // Option 1: Gmail with App Password
+        if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        // Option 2: Gmail with OAuth2
+        else if (process.env.NOTIFY_EMAIL && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
+          transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              type: 'OAuth2',
+              user: process.env.NOTIFY_EMAIL,
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+              accessToken: null
+            }
+          });
+        }
+        // Option 3: Outlook/Hotmail
+        else if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'outlook',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        // Option 4: Yahoo
+        else if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'yahoo',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        else {
           console.error('Email credentials not set in environment variables.');
           return;
         }
-        let transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.NOTIFY_EMAIL,
-            pass: process.env.NOTIFY_EMAIL_PASS
-          }
-        });
 
         await transporter.sendMail({
           from: process.env.NOTIFY_EMAIL,
@@ -111,7 +154,7 @@ app.post('/api/contact', async (req, res) => {
         });
         console.log('Notification email sent successfully.');
       } catch (emailError) {
-        console.error('GMAIL EMAIL SEND ERROR (background):', emailError);
+        console.error('EMAIL SEND ERROR (background):', emailError);
       }
     });
   } catch (error) {
@@ -222,6 +265,78 @@ app.delete('/api/admin/testimonials/:id', auth, async (req, res) => {
   } catch (error) {
     console.error('Delete testimonial error:', error);
     res.status(500).json({ message: 'Failed to delete testimonial', error: error.message });
+  }
+});
+
+// Bulk delete testimonials (admin only)
+app.delete('/api/admin/testimonials/bulk', auth, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ message: 'Invalid IDs provided' });
+    }
+    
+    const result = await Testimonial.deleteMany({ _id: { $in: ids } });
+    
+    res.json({ 
+      message: `${result.deletedCount} testimonial(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Bulk delete testimonials error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonials', error: error.message });
+  }
+});
+
+// Delete all testimonials (admin only)
+app.delete('/api/admin/testimonials/all', auth, async (req, res) => {
+  try {
+    const result = await Testimonial.deleteMany({});
+    
+    res.json({ 
+      message: `${result.deletedCount} testimonial(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all testimonials error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonials', error: error.message });
+  }
+});
+
+// Bulk delete submissions (admin only)
+app.delete('/api/admin/submissions/bulk', auth, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ message: 'Invalid IDs provided' });
+    }
+    
+    const result = await Submission.deleteMany({ _id: { $in: ids } });
+    
+    res.json({ 
+      message: `${result.deletedCount} submission(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Bulk delete submissions error:', error);
+    res.status(500).json({ message: 'Failed to delete submissions', error: error.message });
+  }
+});
+
+// Delete all submissions (admin only)
+app.delete('/api/admin/submissions/all', auth, async (req, res) => {
+  try {
+    const result = await Submission.deleteMany({});
+    
+    res.json({ 
+      message: `${result.deletedCount} submission(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all submissions error:', error);
+    res.status(500).json({ message: 'Failed to delete submissions', error: error.message });
   }
 });
 
