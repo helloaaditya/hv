@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 
 const Admin = require('./models/Admin');
 const Submission = require('./models/Submission');
+const Testimonial = require('./models/Testimonial');
 
 const app = express();
 const allowedOrigins = [
@@ -123,6 +124,105 @@ app.post('/api/contact', async (req, res) => {
 app.get('/api/admin/submissions', auth, async (req, res) => {
   const submissions = await Submission.find().sort({ date: -1 });
   res.json(submissions);
+});
+
+// Testimonial routes
+// Submit a new testimonial
+app.post('/api/testimonials', async (req, res) => {
+  try {
+    const { name, email, role, rating, content, image } = req.body;
+    
+    // Validate required fields
+    if (!name || !email || !role || !content) {
+      return res.status(400).json({ message: 'Please fill in all required fields' });
+    }
+    
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+    
+    const testimonial = await Testimonial.create({
+      name,
+      email,
+      role,
+      rating,
+      content,
+      image: image || ''
+    });
+    
+    res.status(201).json({ 
+      message: 'Testimonial submitted successfully! It will be reviewed by our team.',
+      testimonial 
+    });
+  } catch (error) {
+    console.error('Testimonial submission error:', error);
+    res.status(500).json({ message: 'Failed to submit testimonial', error: error.message });
+  }
+});
+
+// Get approved testimonials (public)
+app.get('/api/testimonials', async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find({ isApproved: true })
+      .sort({ date: -1 })
+      .limit(10); // Limit to 10 most recent approved testimonials
+    res.json(testimonials);
+  } catch (error) {
+    console.error('Get testimonials error:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials', error: error.message });
+  }
+});
+
+// Get all testimonials (admin only)
+app.get('/api/admin/testimonials', auth, async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find().sort({ date: -1 });
+    res.json(testimonials);
+  } catch (error) {
+    console.error('Get admin testimonials error:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials', error: error.message });
+  }
+});
+
+// Approve/reject testimonial (admin only)
+app.put('/api/admin/testimonials/:id', auth, async (req, res) => {
+  try {
+    const { isApproved } = req.body;
+    const testimonial = await Testimonial.findByIdAndUpdate(
+      req.params.id,
+      { isApproved },
+      { new: true }
+    );
+    
+    if (!testimonial) {
+      return res.status(404).json({ message: 'Testimonial not found' });
+    }
+    
+    res.json({ 
+      message: `Testimonial ${isApproved ? 'approved' : 'rejected'} successfully`,
+      testimonial 
+    });
+  } catch (error) {
+    console.error('Update testimonial error:', error);
+    res.status(500).json({ message: 'Failed to update testimonial', error: error.message });
+  }
+});
+
+// Delete testimonial (admin only)
+app.delete('/api/admin/testimonials/:id', auth, async (req, res) => {
+  try {
+    const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
+    
+    if (!testimonial) {
+      return res.status(404).json({ message: 'Testimonial not found' });
+    }
+    
+    res.json({ message: 'Testimonial deleted successfully' });
+  } catch (error) {
+    console.error('Delete testimonial error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonial', error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
