@@ -10,11 +10,11 @@ export default function Admin() {
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('submissions'); // 'submissions' or 'testimonials'
+  const [activeTab, setActiveTab] = useState('submissions');
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null); // null for single, 'all' for all, or array for bulk
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchSubmissions = () => {
     if (token) {
@@ -60,7 +60,6 @@ export default function Admin() {
   useEffect(() => {
     fetchSubmissions();
     fetchTestimonials();
-    // eslint-disable-next-line
   }, [token]);
 
   const handleDelete = async (id) => {
@@ -74,7 +73,6 @@ export default function Admin() {
     setLoading(true);
     try {
       if (deleteTarget === 'all') {
-        // Delete all items
         const endpoint = activeTab === 'submissions' 
           ? 'https://hv-4qa2.onrender.com/api/admin/submissions/all'
           : 'https://hv-4qa2.onrender.com/api/admin/testimonials/all';
@@ -90,7 +88,6 @@ export default function Admin() {
           setTestimonials([]);
         }
       } else if (Array.isArray(deleteTarget)) {
-        // Bulk delete selected items
         const endpoint = activeTab === 'submissions' 
           ? 'https://hv-4qa2.onrender.com/api/admin/submissions/bulk'
           : 'https://hv-4qa2.onrender.com/api/admin/testimonials/bulk';
@@ -110,7 +107,6 @@ export default function Admin() {
           setTestimonials(testimonials.filter(t => !deleteTarget.includes(t._id)));
         }
       } else {
-        // Delete single item
         const endpoint = activeTab === 'submissions' 
           ? `https://hv-4qa2.onrender.com/api/admin/submissions/${deleteTarget}`
           : `https://hv-4qa2.onrender.com/api/admin/testimonials/${deleteTarget}`;
@@ -364,37 +360,38 @@ export default function Admin() {
                         <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Delete</th>
                       </tr>
                     </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {submissions.map(s => (
-                      <tr key={s._id} className="hover:bg-blue-50 transition">
-                        <td className="px-4 py-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedItems.has(s._id)}
-                            onChange={() => handleSelectItem(s._id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{s.name}</td>
-                        <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{s.email}</td>
-                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{s.phone || '-'}</td>
-                        <td className="px-4 py-3 text-gray-700 max-w-xs break-words truncate" title={s.message}>{s.message}</td>
-                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{new Date(s.date).toLocaleString()}</td>
-                        <td className="px-4 py-3 text-center">
-                          <button onClick={() => setSelected(s)} className="text-blue-600 hover:text-blue-900" title="View Details">
-                            <Eye className="w-5 h-5 inline" />
-                          </button>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <button onClick={() => handleDelete(s._id)} className="text-red-600 hover:text-red-900" title="Delete Lead" disabled={loading}>
-                            <Trash2 className="w-5 h-5 inline" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    <tbody className="bg-white divide-y divide-gray-100">
+                      {submissions.map(s => (
+                        <tr key={s._id} className="hover:bg-blue-50 transition">
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.has(s._id)}
+                              onChange={() => handleSelectItem(s._id)}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                          </td>
+                          <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{s.name}</td>
+                          <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{s.email}</td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{s.phone || '-'}</td>
+                          <td className="px-4 py-3 text-gray-700 max-w-xs break-words truncate" title={s.message}>{s.message}</td>
+                          <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{new Date(s.date).toLocaleString()}</td>
+                          <td className="px-4 py-3 text-center">
+                            <button onClick={() => setSelected(s)} className="text-blue-600 hover:text-blue-900" title="View Details">
+                              <Eye className="w-5 h-5 inline" />
+                            </button>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button onClick={() => handleDelete(s._id)} className="text-red-600 hover:text-red-900" title="Delete Lead" disabled={loading}>
+                              <Trash2 className="w-5 h-5 inline" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </>
         )}
@@ -456,88 +453,89 @@ export default function Admin() {
                         <th className="px-4 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {testimonials.map(t => (
-                      <tr key={t._id} className="hover:bg-blue-50 transition">
-                        <td className="px-4 py-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedItems.has(t._id)}
-                            onChange={() => handleSelectItem(t._id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{t.name}</td>
-                        <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{t.email}</td>
-                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{t.role}</td>
-                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < t.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
-                            <span className="ml-2 text-sm text-gray-500">({t.rating})</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-gray-700 max-w-xs break-words truncate" title={t.content}>{t.content}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            t.isApproved 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {t.isApproved ? 'Approved' : 'Pending'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{new Date(t.date).toLocaleString()}</td>
-                        <td className="px-4 py-3 text-center">
-                          <div className="flex justify-center space-x-2">
-                            <button 
-                              onClick={() => setSelected(t)} 
-                              className="text-blue-600 hover:text-blue-900" 
-                              title="View Details"
-                            >
-                              <Eye className="w-5 h-5" />
-                            </button>
-                            {!t.isApproved && (
+                    <tbody className="bg-white divide-y divide-gray-100">
+                      {testimonials.map(t => (
+                        <tr key={t._id} className="hover:bg-blue-50 transition">
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.has(t._id)}
+                              onChange={() => handleSelectItem(t._id)}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                          </td>
+                          <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{t.name}</td>
+                          <td className="px-4 py-3 text-blue-700 whitespace-nowrap">{t.email}</td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{t.role}</td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < t.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                              <span className="ml-2 text-sm text-gray-500">({t.rating})</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 max-w-xs break-words truncate" title={t.content}>{t.content}</td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              t.isApproved 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {t.isApproved ? 'Approved' : 'Pending'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{new Date(t.date).toLocaleString()}</td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="flex justify-center space-x-2">
                               <button 
-                                onClick={() => handleApproveTestimonial(t._id, true)} 
-                                className="text-green-600 hover:text-green-900" 
-                                title="Approve"
+                                onClick={() => setSelected(t)} 
+                                className="text-blue-600 hover:text-blue-900" 
+                                title="View Details"
+                              >
+                                <Eye className="w-5 h-5" />
+                              </button>
+                              {!t.isApproved && (
+                                <button 
+                                  onClick={() => handleApproveTestimonial(t._id, true)} 
+                                  className="text-green-600 hover:text-green-900" 
+                                  title="Approve"
+                                  disabled={loading}
+                                >
+                                  <CheckCircle className="w-5 h-5" />
+                                </button>
+                              )}
+                              {t.isApproved && (
+                                <button 
+                                  onClick={() => handleApproveTestimonial(t._id, false)} 
+                                  className="text-yellow-600 hover:text-yellow-900" 
+                                  title="Reject"
+                                  disabled={loading}
+                                >
+                                  <XCircle className="w-5 h-5" />
+                                </button>
+                              )}
+                              <button 
+                                onClick={() => handleDelete(t._id)} 
+                                className="text-red-600 hover:text-red-900" 
+                                title="Delete"
                                 disabled={loading}
                               >
-                                <CheckCircle className="w-5 h-5" />
+                                <Trash2 className="w-5 h-5" />
                               </button>
-                            )}
-                            {t.isApproved && (
-                              <button 
-                                onClick={() => handleApproveTestimonial(t._id, false)} 
-                                className="text-yellow-600 hover:text-yellow-900" 
-                                title="Reject"
-                                disabled={loading}
-                              >
-                                <XCircle className="w-5 h-5" />
-                              </button>
-                            )}
-                            <button 
-                              onClick={() => handleDelete(t._id)} 
-                              className="text-red-600 hover:text-red-900" 
-                              title="Delete"
-                              disabled={loading}
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </>
         )}
