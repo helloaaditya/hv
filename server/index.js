@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 
 const Admin = require('./models/Admin');
 const Submission = require('./models/Submission');
+const Testimonial = require('./models/Testimonial');
 
 const app = express();
 const allowedOrigins = [
@@ -71,13 +72,17 @@ app.post('/api/admin/login', async (req, res) => {
 });
 
 // --- EMAIL NOTIFICATION SETUP ---
-// To use Gmail for notifications:
-// 1. Go to https://myaccount.google.com/apppasswords
-// 2. Generate an App Password for 'Mail' (if you have 2FA enabled)
-// 3. Set NOTIFY_EMAIL to your Gmail, NOTIFY_EMAIL_PASS to the app password in your environment variables
-// 4. Redeploy your backend
+// Option 1: Gmail with App Password (requires 2FA enabled)
+// 1. Enable 2-Factor Authentication: https://myaccount.google.com/security
+// 2. Generate App Password: https://myaccount.google.com/apppasswords
+// 3. Set NOTIFY_EMAIL and NOTIFY_EMAIL_PASS in environment variables
 //
-// If Gmail fails, fallback to Ethereal for testing (emails will not be delivered to real inbox, but you get a preview URL in logs)
+// Option 2: Gmail with OAuth2 (more secure, no app password needed)
+// 1. Set up OAuth2 credentials in Google Cloud Console
+// 2. Set NOTIFY_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
+//
+// Option 3: Other email providers (Outlook, Yahoo, etc.)
+// Update the transporter configuration below
 
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, message } = req.body;
@@ -90,17 +95,56 @@ app.post('/api/contact', async (req, res) => {
     // Send email in the background (non-blocking)
     setImmediate(async () => {
       try {
-        if (!process.env.NOTIFY_EMAIL || !process.env.NOTIFY_EMAIL_PASS) {
+        let transporter;
+        
+        // Option 1: Gmail with App Password
+        if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        // Option 2: Gmail with OAuth2
+        else if (process.env.NOTIFY_EMAIL && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
+          transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              type: 'OAuth2',
+              user: process.env.NOTIFY_EMAIL,
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+              accessToken: null
+            }
+          });
+        }
+        // Option 3: Outlook/Hotmail
+        else if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'outlook',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        // Option 4: Yahoo
+        else if (process.env.NOTIFY_EMAIL && process.env.NOTIFY_EMAIL_PASS) {
+          transporter = nodemailer.createTransport({
+            service: 'yahoo',
+            auth: {
+              user: process.env.NOTIFY_EMAIL,
+              pass: process.env.NOTIFY_EMAIL_PASS
+            }
+          });
+        }
+        else {
           console.error('Email credentials not set in environment variables.');
           return;
         }
-        let transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.NOTIFY_EMAIL,
-            pass: process.env.NOTIFY_EMAIL_PASS
-          }
-        });
 
         await transporter.sendMail({
           from: process.env.NOTIFY_EMAIL,
@@ -110,7 +154,7 @@ app.post('/api/contact', async (req, res) => {
         });
         console.log('Notification email sent successfully.');
       } catch (emailError) {
-        console.error('GMAIL EMAIL SEND ERROR (background):', emailError);
+        console.error('EMAIL SEND ERROR (background):', emailError);
       }
     });
   } catch (error) {
@@ -123,6 +167,177 @@ app.post('/api/contact', async (req, res) => {
 app.get('/api/admin/submissions', auth, async (req, res) => {
   const submissions = await Submission.find().sort({ date: -1 });
   res.json(submissions);
+});
+
+// Testimonial routes
+// Submit a new testimonial
+app.post('/api/testimonials', async (req, res) => {
+  try {
+    const { name, email, role, rating, content, image } = req.body;
+    
+    // Validate required fields
+    if (!name || !email || !role || !content) {
+      return res.status(400).json({ message: 'Please fill in all required fields' });
+    }
+    
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+    
+    const testimonial = await Testimonial.create({
+      name,
+      email,
+      role,
+      rating,
+      content,
+      image: image || ''
+    });
+    
+    res.status(201).json({ 
+      message: 'Testimonial submitted successfully! It will be reviewed by our team.',
+      testimonial 
+    });
+  } catch (error) {
+    console.error('Testimonial submission error:', error);
+    res.status(500).json({ message: 'Failed to submit testimonial', error: error.message });
+  }
+});
+
+// Get approved testimonials (public)
+app.get('/api/testimonials', async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find({ isApproved: true })
+      .sort({ date: -1 })
+      .limit(10); // Limit to 10 most recent approved testimonials
+    res.json(testimonials);
+  } catch (error) {
+    console.error('Get testimonials error:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials', error: error.message });
+  }
+});
+
+// Get all testimonials (admin only)
+app.get('/api/admin/testimonials', auth, async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find().sort({ date: -1 });
+    res.json(testimonials);
+  } catch (error) {
+    console.error('Get admin testimonials error:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials', error: error.message });
+  }
+});
+
+// Approve/reject testimonial (admin only)
+app.put('/api/admin/testimonials/:id', auth, async (req, res) => {
+  try {
+    const { isApproved } = req.body;
+    const testimonial = await Testimonial.findByIdAndUpdate(
+      req.params.id,
+      { isApproved },
+      { new: true }
+    );
+    
+    if (!testimonial) {
+      return res.status(404).json({ message: 'Testimonial not found' });
+    }
+    
+    res.json({ 
+      message: `Testimonial ${isApproved ? 'approved' : 'rejected'} successfully`,
+      testimonial 
+    });
+  } catch (error) {
+    console.error('Update testimonial error:', error);
+    res.status(500).json({ message: 'Failed to update testimonial', error: error.message });
+  }
+});
+
+// Delete testimonial (admin only)
+app.delete('/api/admin/testimonials/:id', auth, async (req, res) => {
+  try {
+    const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
+    
+    if (!testimonial) {
+      return res.status(404).json({ message: 'Testimonial not found' });
+    }
+    
+    res.json({ message: 'Testimonial deleted successfully' });
+  } catch (error) {
+    console.error('Delete testimonial error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonial', error: error.message });
+  }
+});
+
+// Bulk delete testimonials (admin only)
+app.delete('/api/admin/testimonials/bulk', auth, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ message: 'Invalid IDs provided' });
+    }
+    
+    const result = await Testimonial.deleteMany({ _id: { $in: ids } });
+    
+    res.json({ 
+      message: `${result.deletedCount} testimonial(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Bulk delete testimonials error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonials', error: error.message });
+  }
+});
+
+// Delete all testimonials (admin only)
+app.delete('/api/admin/testimonials/all', auth, async (req, res) => {
+  try {
+    const result = await Testimonial.deleteMany({});
+    
+    res.json({ 
+      message: `${result.deletedCount} testimonial(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all testimonials error:', error);
+    res.status(500).json({ message: 'Failed to delete testimonials', error: error.message });
+  }
+});
+
+// Bulk delete submissions (admin only)
+app.delete('/api/admin/submissions/bulk', auth, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ message: 'Invalid IDs provided' });
+    }
+    
+    const result = await Submission.deleteMany({ _id: { $in: ids } });
+    
+    res.json({ 
+      message: `${result.deletedCount} submission(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Bulk delete submissions error:', error);
+    res.status(500).json({ message: 'Failed to delete submissions', error: error.message });
+  }
+});
+
+// Delete all submissions (admin only)
+app.delete('/api/admin/submissions/all', auth, async (req, res) => {
+  try {
+    const result = await Submission.deleteMany({});
+    
+    res.json({ 
+      message: `${result.deletedCount} submission(s) deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all submissions error:', error);
+    res.status(500).json({ message: 'Failed to delete submissions', error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
