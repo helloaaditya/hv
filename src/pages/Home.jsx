@@ -86,7 +86,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Luxury Residential Basement",
       location: "Bengaluru, Karnataka",
       description: "Complete basement waterproofing with premium drainage system and moisture control.",
-      image: "https://plus.unsplash.com/premium_photo-1661877360520-f70603f7c0d8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8THV4dXJ5JTIwUmVzaWRlbnRpYWwlMjBCYXNlbWVudHxlbnwwfHwwfHx8MA%3D%3D", // Realistic: workers waterproofing a basement wall
+      image: "https://i.postimg.cc/5YhLdnSh/115.jpg", // Realistic: workers waterproofing a basement wall
       category: "Residential",
       completedDate: "March 2024",
       features: ["Interior Drainage", "Vapor Barrier", "Dehumidification System"]
@@ -95,7 +95,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Commercial Warehouse Complex",
       location: "Mumbai, Maharashtra",
       description: "Large-scale waterproofing for 50,000 sq ft warehouse facility with advanced membrane system.",
-      image: "https://images.unsplash.com/photo-1568210405373-e569f2134ad1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Q29tbWVyY2lhbCUyMFdhcmVob3VzZSUyMENvbXBsZXh8ZW58MHx8MHx8fDA%3D", // Realistic: commercial waterproofing
+      image: "https://i.postimg.cc/tZKWQ2zp/111.jpg",
       category: "Commercial",
       completedDate: "February 2024",
       features: ["Membrane Waterproofing", "Structural Reinforcement", "Drainage Solutions"]
@@ -104,7 +104,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Heritage Building Restoration",
       location: "Delhi, NCR",
       description: "Specialized waterproofing for historic structure preserving architectural integrity.",
-      image: "https://images.pexels.com/photos/210158/pexels-photo-210158.jpeg?auto=compress&w=800&q=80", // Realistic: restoration work
+      image: "https://i.postimg.cc/r0BxXQ9L/112.jpg",
       category: "Heritage",
       completedDate: "January 2024",
       features: ["Heritage Preservation", "Custom Solutions", "Structural Protection"]
@@ -113,7 +113,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Multi-Story Residential Complex",
       location: "Hyderabad, Telangana",
       description: "Comprehensive waterproofing for 12-story residential building with terrace garden.",
-      image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&w=800&q=80", // Realistic: high-rise waterproofing
+      image: "https://i.postimg.cc/9R6Z5JBc/113.jpg", // Realistic: high-rise waterproofing`
       category: "Residential",
       completedDate: "December 2023",
       features: ["Roof Waterproofing", "Terrace Gardens", "Facade Protection"]
@@ -122,7 +122,7 @@ export default function LandingPage({ openQuoteModal }) {
       title: "Industrial Manufacturing Plant",
       location: "Chennai, Tamil Nadu",
       description: "Heavy-duty waterproofing for chemical processing facility with specialized coatings.",
-      image: "https://images.pexels.com/photos/209251/pexels-photo-209251.jpeg?auto=compress&w=800&q=80", // Realistic: industrial waterproofing
+      image: "https://i.postimg.cc/CxYr04c5/114.jpg", // Realistic: industrial waterproofing
       category: "Industrial",
       completedDate: "November 2023",
       features: ["Chemical Resistant Coatings", "Floor Waterproofing", "Containment Systems"]
