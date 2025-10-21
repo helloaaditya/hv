@@ -9,6 +9,10 @@ const nodemailer = require('nodemailer');
 const Admin = require('./models/Admin');
 const Submission = require('./models/Submission');
 const Testimonial = require('./models/Testimonial');
+const Service = require('./models/Service');
+const HomepageContent = require('./models/HomepageContent');
+const ContactDetails = require('./models/ContactDetails');
+const ProjectPhoto = require('./models/ProjectPhoto');
 
 const app = express();
 const allowedOrigins = [
@@ -337,6 +341,204 @@ app.delete('/api/admin/submissions/all', auth, async (req, res) => {
   } catch (error) {
     console.error('Delete all submissions error:', error);
     res.status(500).json({ message: 'Failed to delete submissions', error: error.message });
+  }
+});
+
+// ===== SERVICES MANAGEMENT =====
+// Get all services
+app.get('/api/services', async (req, res) => {
+  try {
+    const services = await Service.find({ isActive: true }).sort({ order: 1 });
+    res.json(services);
+  } catch (error) {
+    console.error('Get services error:', error);
+    res.status(500).json({ message: 'Failed to fetch services', error: error.message });
+  }
+});
+
+// Get all services (admin only)
+app.get('/api/admin/services', auth, async (req, res) => {
+  try {
+    const services = await Service.find().sort({ order: 1 });
+    res.json(services);
+  } catch (error) {
+    console.error('Get admin services error:', error);
+    res.status(500).json({ message: 'Failed to fetch services', error: error.message });
+  }
+});
+
+// Create service (admin only)
+app.post('/api/admin/services', auth, async (req, res) => {
+  try {
+    const service = await Service.create(req.body);
+    res.status(201).json({ message: 'Service created successfully', service });
+  } catch (error) {
+    console.error('Create service error:', error);
+    res.status(500).json({ message: 'Failed to create service', error: error.message });
+  }
+});
+
+// Update service (admin only)
+app.put('/api/admin/services/:id', auth, async (req, res) => {
+  try {
+    const service = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+    res.json({ message: 'Service updated successfully', service });
+  } catch (error) {
+    console.error('Update service error:', error);
+    res.status(500).json({ message: 'Failed to update service', error: error.message });
+  }
+});
+
+// Delete service (admin only)
+app.delete('/api/admin/services/:id', auth, async (req, res) => {
+  try {
+    const service = await Service.findByIdAndDelete(req.params.id);
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+    res.json({ message: 'Service deleted successfully' });
+  } catch (error) {
+    console.error('Delete service error:', error);
+    res.status(500).json({ message: 'Failed to delete service', error: error.message });
+  }
+});
+
+// ===== HOMEPAGE CONTENT MANAGEMENT =====
+// Get homepage content
+app.get('/api/homepage-content', async (req, res) => {
+  try {
+    const content = await HomepageContent.find({ isActive: true });
+    res.json(content);
+  } catch (error) {
+    console.error('Get homepage content error:', error);
+    res.status(500).json({ message: 'Failed to fetch homepage content', error: error.message });
+  }
+});
+
+// Get all homepage content (admin only)
+app.get('/api/admin/homepage-content', auth, async (req, res) => {
+  try {
+    const content = await HomepageContent.find();
+    res.json(content);
+  } catch (error) {
+    console.error('Get admin homepage content error:', error);
+    res.status(500).json({ message: 'Failed to fetch homepage content', error: error.message });
+  }
+});
+
+// Update homepage content (admin only)
+app.put('/api/admin/homepage-content/:id', auth, async (req, res) => {
+  try {
+    const content = await HomepageContent.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    res.json({ message: 'Content updated successfully', content });
+  } catch (error) {
+    console.error('Update homepage content error:', error);
+    res.status(500).json({ message: 'Failed to update content', error: error.message });
+  }
+});
+
+// ===== CONTACT DETAILS MANAGEMENT =====
+// Get contact details
+app.get('/api/contact-details', async (req, res) => {
+  try {
+    const details = await ContactDetails.find({ isActive: true });
+    res.json(details);
+  } catch (error) {
+    console.error('Get contact details error:', error);
+    res.status(500).json({ message: 'Failed to fetch contact details', error: error.message });
+  }
+});
+
+// Get all contact details (admin only)
+app.get('/api/admin/contact-details', auth, async (req, res) => {
+  try {
+    const details = await ContactDetails.find();
+    res.json(details);
+  } catch (error) {
+    console.error('Get admin contact details error:', error);
+    res.status(500).json({ message: 'Failed to fetch contact details', error: error.message });
+  }
+});
+
+// Update contact details (admin only)
+app.put('/api/admin/contact-details/:id', auth, async (req, res) => {
+  try {
+    const details = await ContactDetails.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!details) {
+      return res.status(404).json({ message: 'Contact details not found' });
+    }
+    res.json({ message: 'Contact details updated successfully', details });
+  } catch (error) {
+    console.error('Update contact details error:', error);
+    res.status(500).json({ message: 'Failed to update contact details', error: error.message });
+  }
+});
+
+// ===== PROJECT PHOTOS MANAGEMENT =====
+// Get project photos
+app.get('/api/project-photos', async (req, res) => {
+  try {
+    const photos = await ProjectPhoto.find({ isActive: true }).sort({ order: 1 });
+    res.json(photos);
+  } catch (error) {
+    console.error('Get project photos error:', error);
+    res.status(500).json({ message: 'Failed to fetch project photos', error: error.message });
+  }
+});
+
+// Get all project photos (admin only)
+app.get('/api/admin/project-photos', auth, async (req, res) => {
+  try {
+    const photos = await ProjectPhoto.find().sort({ order: 1 });
+    res.json(photos);
+  } catch (error) {
+    console.error('Get admin project photos error:', error);
+    res.status(500).json({ message: 'Failed to fetch project photos', error: error.message });
+  }
+});
+
+// Create project photo (admin only)
+app.post('/api/admin/project-photos', auth, async (req, res) => {
+  try {
+    const photo = await ProjectPhoto.create(req.body);
+    res.status(201).json({ message: 'Project photo created successfully', photo });
+  } catch (error) {
+    console.error('Create project photo error:', error);
+    res.status(500).json({ message: 'Failed to create project photo', error: error.message });
+  }
+});
+
+// Update project photo (admin only)
+app.put('/api/admin/project-photos/:id', auth, async (req, res) => {
+  try {
+    const photo = await ProjectPhoto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!photo) {
+      return res.status(404).json({ message: 'Project photo not found' });
+    }
+    res.json({ message: 'Project photo updated successfully', photo });
+  } catch (error) {
+    console.error('Update project photo error:', error);
+    res.status(500).json({ message: 'Failed to update project photo', error: error.message });
+  }
+});
+
+// Delete project photo (admin only)
+app.delete('/api/admin/project-photos/:id', auth, async (req, res) => {
+  try {
+    const photo = await ProjectPhoto.findByIdAndDelete(req.params.id);
+    if (!photo) {
+      return res.status(404).json({ message: 'Project photo not found' });
+    }
+    res.json({ message: 'Project photo deleted successfully' });
+  } catch (error) {
+    console.error('Delete project photo error:', error);
+    res.status(500).json({ message: 'Failed to delete project photo', error: error.message });
   }
 });
 
