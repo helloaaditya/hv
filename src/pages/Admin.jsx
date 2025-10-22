@@ -22,6 +22,7 @@ export default function Admin() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [heroSlides, setHeroSlides] = useState([]);
 
   const fetchSubmissions = () => {
     if (token) {
@@ -66,7 +67,12 @@ export default function Admin() {
       })
         .then(res => res.json())
         .then(data => {
-          if (Array.isArray(data)) setHomepageContent(data);
+          if (Array.isArray(data)) {
+            setHomepageContent(data);
+            // Extract hero slides from homepage content
+            const heroItems = data.filter(c => (c.section || '').toLowerCase().startsWith('hero'));
+            setHeroSlides(heroItems);
+          }
         });
     }
   };
@@ -456,6 +462,77 @@ export default function Admin() {
     }
   };
 
+  // Hero slides specific functions
+  const handleCreateHeroSlide = async (slideData) => {
+    setLoading(true);
+    try {
+      const response = await fetch('https://hv-4qa2.onrender.com/api/admin/homepage-content', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: token 
+        },
+        body: JSON.stringify({
+          ...slideData,
+          section: `hero-${Date.now()}`, // Unique section name
+          isActive: true
+        }),
+      });
+      
+      if (response.ok) {
+        fetchHomepageContent();
+        setShowEditModal(false);
+        setEditForm({});
+      }
+    } catch (error) {
+      console.error('Error creating hero slide:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateHeroSlide = async (id, slideData) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/homepage-content/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: token 
+        },
+        body: JSON.stringify(slideData),
+      });
+      
+      if (response.ok) {
+        fetchHomepageContent();
+        setShowEditModal(false);
+        setEditForm({});
+      }
+    } catch (error) {
+      console.error('Error updating hero slide:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteHeroSlide = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/homepage-content/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: token },
+      });
+      
+      if (response.ok) {
+        fetchHomepageContent();
+      }
+    } catch (error) {
+      console.error('Error deleting hero slide:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const openEditModal = (item, type) => {
     setEditingItem({ ...item, type });
     setEditForm({ ...item });
@@ -487,6 +564,13 @@ export default function Admin() {
         break;
       case 'homepageContent':
         handleUpdateHomepageContent(_id, editForm);
+        break;
+      case 'heroSlide':
+        if (_id) {
+          handleUpdateHeroSlide(_id, editForm);
+        } else {
+          handleCreateHeroSlide(editForm);
+        }
         break;
       default:
         break;
@@ -592,6 +676,17 @@ export default function Admin() {
             Services ({services.length})
           </button>
           <button
+            onClick={() => setActiveTab('hero')}
+            className={`px-4 py-3 font-semibold border-b-2 transition-colors text-sm ${
+              activeTab === 'hero'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Home className="w-4 h-4 inline mr-2" />
+            Hero Slides ({heroSlides.length})
+          </button>
+          <button
             onClick={() => setActiveTab('homepage')}
             className={`px-4 py-3 font-semibold border-b-2 transition-colors text-sm ${
               activeTab === 'homepage'
@@ -599,7 +694,7 @@ export default function Admin() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            <Home className="w-4 h-4 inline mr-2" />
+            <Settings className="w-4 h-4 inline mr-2" />
             Homepage Content
           </button>
           <button
@@ -938,6 +1033,82 @@ export default function Admin() {
           </>
         )}
 
+        {/* Hero Slides Tab */}
+        {activeTab === 'hero' && (
+          <>
+            <div className="mb-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">Hero Slides Management</h3>
+              <button
+                onClick={() => openEditModal({}, 'heroSlide')}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Hero Slide
+              </button>
+            </div>
+            {heroSlides.length === 0 ? (
+              <div className="text-gray-500 text-center py-8 text-lg">No hero slides yet. Add your first slide to get started.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {heroSlides.map((slide, index) => (
+                  <div key={slide._id} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                    <div className="relative">
+                      <img 
+                        src={slide.image || 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop&auto=format'} 
+                        alt={slide.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute top-2 right-2 flex gap-2">
+                        <button
+                          onClick={() => openEditModal(slide, 'heroSlide')}
+                          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg"
+                          title="Edit Slide"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteHeroSlide(slide._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg"
+                          title="Delete Slide"
+                          disabled={loading}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="absolute bottom-2 left-2">
+                        <span className="bg-black/50 text-white px-2 py-1 rounded text-xs font-medium">
+                          Slide {index + 1}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{slide.title}</h4>
+                      {slide.subtitle && (
+                        <p className="text-gray-600 mb-2 text-sm line-clamp-2">{slide.subtitle}</p>
+                      )}
+                      {slide.description && (
+                        <p className="text-gray-500 text-xs line-clamp-3">{slide.description}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          slide.isActive 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {slide.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {slide.section}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
         {/* Homepage Content Tab */}
         {activeTab === 'homepage' && (
           <>
@@ -1230,7 +1401,8 @@ export default function Admin() {
               {editingItem?._id ? 'Edit' : 'Add'} {editingItem?.type === 'service' ? 'Service' : 
                editingItem?.type === 'projectPhoto' ? 'Project Photo' :
                editingItem?.type === 'contactDetails' ? 'Contact Detail' :
-               editingItem?.type === 'homepageContent' ? 'Homepage Content' : 'Item'}
+               editingItem?.type === 'homepageContent' ? 'Homepage Content' :
+               editingItem?.type === 'heroSlide' ? 'Hero Slide' : 'Item'}
             </h3>
             
             <div className="space-y-4">
@@ -1442,6 +1614,62 @@ export default function Admin() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       rows="3"
                       placeholder="Contact information value"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editForm.isActive || false}
+                        onChange={(e) => setEditForm({...editForm, isActive: e.target.checked})}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm font-medium text-gray-700">Active</span>
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {editingItem?.type === 'heroSlide' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <input
+                      type="text"
+                      value={editForm.title || ''}
+                      onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Hero slide title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+                    <input
+                      type="text"
+                      value={editForm.subtitle || ''}
+                      onChange={(e) => setEditForm({...editForm, subtitle: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Hero slide subtitle"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea
+                      value={editForm.description || ''}
+                      onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows="3"
+                      placeholder="Hero slide description"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                    <input
+                      type="url"
+                      value={editForm.image || ''}
+                      onChange={(e) => setEditForm({...editForm, image: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="https://example.com/hero-image.jpg"
                     />
                   </div>
                   <div className="flex items-center">

@@ -429,6 +429,17 @@ app.get('/api/admin/homepage-content', auth, async (req, res) => {
   }
 });
 
+// Create homepage content (admin only)
+app.post('/api/admin/homepage-content', auth, async (req, res) => {
+  try {
+    const content = await HomepageContent.create(req.body);
+    res.status(201).json({ message: 'Content created successfully', content });
+  } catch (error) {
+    console.error('Create homepage content error:', error);
+    res.status(500).json({ message: 'Failed to create content', error: error.message });
+  }
+});
+
 // Update homepage content (admin only)
 app.put('/api/admin/homepage-content/:id', auth, async (req, res) => {
   try {
@@ -440,6 +451,20 @@ app.put('/api/admin/homepage-content/:id', auth, async (req, res) => {
   } catch (error) {
     console.error('Update homepage content error:', error);
     res.status(500).json({ message: 'Failed to update content', error: error.message });
+  }
+});
+
+// Delete homepage content (admin only)
+app.delete('/api/admin/homepage-content/:id', auth, async (req, res) => {
+  try {
+    const content = await HomepageContent.findByIdAndDelete(req.params.id);
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    res.json({ message: 'Content deleted successfully' });
+  } catch (error) {
+    console.error('Delete homepage content error:', error);
+    res.status(500).json({ message: 'Failed to delete content', error: error.message });
   }
 });
 

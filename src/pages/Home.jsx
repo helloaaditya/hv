@@ -15,6 +15,12 @@ export default function LandingPage({ openQuoteModal }) {
     reviews: 0
   });
 
+  // Data fetched from backend (admin-managed)
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [servicesFromApi, setServicesFromApi] = useState([]);
+  const [recentWorks, setRecentWorks] = useState([]);
+  const [loadingContent, setLoadingContent] = useState(true);
+
   // Counter animation
   useEffect(() => {
     const targets = { projects: 500, experience: 5, clients: 1200, reviews: 4.5 };
@@ -59,84 +65,58 @@ export default function LandingPage({ openQuoteModal }) {
     return () => observer.disconnect();
   }, []);
 
-  // Hero slider with real images
-  const heroSlides = [
-    {
-      title: "Professional Waterproofing Solutions, Bangalore",
-      subtitle: "Protect Your Property with Advanced Technology",
-      description: "Expert waterproofing services for residential and commercial properties. 5+ years of experience with guaranteed results.",
-      image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&w=1600&q=80" // Workers applying waterproofing membrane
-    },
-    {
-      title: "Basement Waterproofing Experts",
-      subtitle: "Keep Your Foundation Dry & Secure",
-      description: "Comprehensive basement waterproofing solutions using cutting-edge materials and proven techniques.",
-      image: "https://plus.unsplash.com/premium_photo-1751728435152-2017b8349c96?q=80&w=1656&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // New: workers applying waterproofing in a basement
-    },
-    {
-      title: "Commercial Waterproofing Services",
-      subtitle: "Large-Scale Protection Solutions",
-      description: "Professional waterproofing for commercial buildings, warehouses, and industrial facilities.",
-      image: "https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&w=1600&q=80" // Construction site with workers and scaffolding
-    }
-  ];
+  // Fetch homepage-managed content
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchContent() {
+      try {
+        const [contentRes, servicesRes, photosRes] = await Promise.all([
+          fetch('https://hv-4qa2.onrender.com/api/homepage-content'),
+          fetch('https://hv-4qa2.onrender.com/api/services'),
+          fetch('https://hv-4qa2.onrender.com/api/project-photos')
+        ]);
 
-  const recentWorks = [
-    {
-      title: "Luxury Residential Basement",
-      location: "Bengaluru, Karnataka",
-      description: "Complete basement waterproofing with premium drainage system and moisture control.",
-      image: "https://i.postimg.cc/5YhLdnSh/115.jpg", // Realistic: workers waterproofing a basement wall
-      category: "Residential",
-      completedDate: "March 2024",
-      features: ["Interior Drainage", "Vapor Barrier", "Dehumidification System"]
-    },
-    {
-      title: "Commercial Warehouse Complex",
-      location: "Mumbai, Maharashtra",
-      description: "Large-scale waterproofing for 50,000 sq ft warehouse facility with advanced membrane system.",
-      image: "https://i.postimg.cc/tZKWQ2zp/111.jpg",
-      category: "Commercial",
-      completedDate: "February 2024",
-      features: ["Membrane Waterproofing", "Structural Reinforcement", "Drainage Solutions"]
-    },
-    {
-      title: "Heritage Building Restoration",
-      location: "Delhi, NCR",
-      description: "Specialized waterproofing for historic structure preserving architectural integrity.",
-      image: "https://i.postimg.cc/r0BxXQ9L/112.jpg",
-      category: "Heritage",
-      completedDate: "January 2024",
-      features: ["Heritage Preservation", "Custom Solutions", "Structural Protection"]
-    },
-    {
-      title: "Multi-Story Residential Complex",
-      location: "Hyderabad, Telangana",
-      description: "Comprehensive waterproofing for 12-story residential building with terrace garden.",
-      image: "https://i.postimg.cc/9R6Z5JBc/113.jpg", // Realistic: high-rise waterproofing`
-      category: "Residential",
-      completedDate: "December 2023",
-      features: ["Roof Waterproofing", "Terrace Gardens", "Facade Protection"]
-    },
-    {
-      title: "Industrial Manufacturing Plant",
-      location: "Chennai, Tamil Nadu",
-      description: "Heavy-duty waterproofing for chemical processing facility with specialized coatings.",
-      image: "https://i.postimg.cc/CxYr04c5/114.jpg", // Realistic: industrial waterproofing
-      category: "Industrial",
-      completedDate: "November 2023",
-      features: ["Chemical Resistant Coatings", "Floor Waterproofing", "Containment Systems"]
-    },
-    {
-      title: "Luxury Villa Swimming Pool",
-      location: "Goa",
-      description: "Premium waterproofing for infinity pool with integrated water features.",
-      image: "https://images.pexels.com/photos/261327/pexels-photo-261327.jpeg?auto=compress&w=800&q=80", // Realistic: pool waterproofing
-      category: "Luxury",
-      completedDate: "October 2023",
-      features: ["Pool Waterproofing", "Water Features", "Deck Protection"]
+        const [contentJson, servicesJson, photosJson] = await Promise.all([
+          contentRes.ok ? contentRes.json() : Promise.resolve([]),
+          servicesRes.ok ? servicesRes.json() : Promise.resolve([]),
+          photosRes.ok ? photosRes.json() : Promise.resolve([])
+        ]);
+
+        if (isCancelled) return;
+
+        // Build hero slides: any content with section starting with 'hero'
+        const heroItems = (contentJson || []).filter(c => (c.section || '').toLowerCase().startsWith('hero'));
+        const slides = heroItems.map(item => ({
+          title: item.title || '',
+          subtitle: item.subtitle || '',
+          description: item.description || '',
+          image: item.image || ''
+        }));
+
+        setHeroSlides(slides.length > 0 ? slides : []);
+        setServicesFromApi(Array.isArray(servicesJson) ? servicesJson : []);
+        setRecentWorks(Array.isArray(photosJson) ? photosJson : []);
+      } catch (e) {
+        // Fail silently; UI will show fallbacks
+        setHeroSlides([]);
+        setServicesFromApi([]);
+        setRecentWorks([]);
+      } finally {
+        if (!isCancelled) setLoadingContent(false);
+      }
     }
-  ];
+    fetchContent();
+    return () => { isCancelled = true; };
+  }, []);
+
+  // Build services cards content from API
+  const homepageServices = (servicesFromApi || []).slice(0, 4).map(s => ({
+    icon: <Shield className="w-8 h-8" />, // default icon for all
+    title: s.title,
+    description: s.description,
+    features: Array.isArray(s.features) ? s.features.slice(0, 3) : [],
+    image: s.image || 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop&auto=format'
+  }));
 
   const faqs = [
     {
@@ -173,36 +153,7 @@ export default function LandingPage({ openQuoteModal }) {
     }
   ];
 
-  const services = [
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Basement Waterproofing",
-      description: "Complete basement protection with interior and exterior waterproofing solutions.",
-      features: ["Interior Drainage", "Exterior Sealing", "Sump Pump Installation"],
-      image: "https://plus.unsplash.com/premium_photo-1751728435152-2017b8349c96?q=80&w=1656&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Foundation Repair",
-      description: "Professional foundation crack repair and structural waterproofing services.",
-      features: ["Crack Injection", "Foundation Sealing", "Structural Reinforcement"],
-      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop&auto=format"
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Roof Waterproofing",
-      description: "Advanced roof waterproofing systems for long-lasting protection.",
-      features: ["Membrane Installation", "Leak Detection", "Preventive Maintenance"],
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format"
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Commercial Services",
-      description: "Large-scale waterproofing solutions for commercial and industrial properties.",
-      features: ["Site Assessment", "Custom Solutions", "Project Management"],
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop&auto=format"
-    }
-  ];
+  // Services are now loaded from API - no hardcoded data
 
   const testimonials = [
     {
@@ -222,6 +173,7 @@ export default function LandingPage({ openQuoteModal }) {
   ];
 
   useEffect(() => {
+    if (heroSlides.length <= 1) return; // rotate only when more than 1 slide
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000);
@@ -236,10 +188,12 @@ export default function LandingPage({ openQuoteModal }) {
   }, [recentWorks.length]);
 
   const nextSlide = () => {
+    if (heroSlides.length === 0) return;
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   };
 
   const prevSlide = () => {
+    if (heroSlides.length === 0) return;
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
@@ -269,35 +223,53 @@ export default function LandingPage({ openQuoteModal }) {
       {/* Hero Section */}
       <section className="relative h-[420px] sm:h-180 flex flex-col items-center justify-center overflow-hidden px-2 sm:px-0 pt-20 sm:pt-0">
         <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
-          <img 
-            src={heroSlides[currentSlide].image} 
-            alt={heroSlides[currentSlide].title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
+          {heroSlides.length > 0 ? (
+            <>
+              <img 
+                src={heroSlides[currentSlide].image} 
+                alt={heroSlides[currentSlide].title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
+            </>
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-blue-900 to-indigo-900" />
+          )}
         </div>
-        <button 
-          onClick={prevSlide}
-          className="absolute left-2 sm:left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-all duration-300"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        <button 
-          onClick={nextSlide}
-          className="absolute right-2 sm:right-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-all duration-300"
-        >
-          <ChevronRight className="w-6 h-6 text-white" />
-        </button>
+        {heroSlides.length > 1 && (
+          <>
+            <button 
+              onClick={prevSlide}
+              className="absolute left-2 sm:left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-all duration-300"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            <button 
+              onClick={nextSlide}
+              className="absolute right-2 sm:right-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-all duration-300"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          </>
+        )}
         <div className="relative z-10 text-center text-white px-2 sm:px-6 max-w-6xl w-full">
-          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-6 animate-fade-in leading-tight break-words">
-            {heroSlides[currentSlide].title}
-          </h1>
-          <p className="text-base xs:text-lg sm:text-xl md:text-2xl mb-2 sm:mb-6 text-blue-100 font-medium">
-            {heroSlides[currentSlide].subtitle}
-          </p>
-          <p className="text-xs xs:text-sm sm:text-lg mb-4 sm:mb-10 text-gray-200 max-w-xs xs:max-w-sm sm:max-w-2xl sm:max-w-4xl mx-auto leading-relaxed">
-            {heroSlides[currentSlide].description}
-          </p>
+          {heroSlides.length > 0 && (
+            <>
+              <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-6 animate-fade-in leading-tight break-words">
+                {heroSlides[currentSlide]?.title}
+              </h1>
+              {heroSlides[currentSlide]?.subtitle && (
+                <p className="text-base xs:text-lg sm:text-xl md:text-2xl mb-2 sm:mb-6 text-blue-100 font-medium">
+                  {heroSlides[currentSlide]?.subtitle}
+                </p>
+              )}
+              {heroSlides[currentSlide]?.description && (
+                <p className="text-xs xs:text-sm sm:text-lg mb-4 sm:mb-10 text-gray-200 max-w-xs xs:max-w-sm sm:max-w-2xl sm:max-w-4xl mx-auto leading-relaxed">
+                  {heroSlides[currentSlide]?.description}
+                </p>
+              )}
+            </>
+          )}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center w-full">
             <button
               className="block w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center justify-center space-x-3 text-sm xs:text-base sm:text-lg"
@@ -311,17 +283,19 @@ export default function LandingPage({ openQuoteModal }) {
             </button>
           </div>
         </div>
-        <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 xs:w-2.5 xs:h-2.5 sm:w-4 sm:h-4 rounded-full transition-all duration-300 ${
-                index === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'
-              }`}
-            />
-          ))}
-        </div>
+        {heroSlides.length > 1 && (
+          <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 xs:w-2.5 xs:h-2.5 sm:w-4 sm:h-4 rounded-full transition-all duration-300 ${
+                  index === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Stats Section */}
@@ -370,7 +344,7 @@ export default function LandingPage({ openQuoteModal }) {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {services.map((service, index) => (
+            {(homepageServices.length > 0 ? homepageServices : []).map((service, index) => (
               <div key={index} className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 group animate-on-scroll">
                 <div className="relative h-36 sm:h-48 overflow-hidden">
                   <img 
@@ -421,18 +395,26 @@ export default function LandingPage({ openQuoteModal }) {
             <div className="lg:col-span-2 animate-on-scroll">
               <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 group">
                 <div className="relative h-52 sm:h-80 overflow-hidden">
-                  <img 
-                    src={recentWorks[activeProject].image} 
-                    alt={recentWorks[activeProject].title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
+                  {recentWorks.length > 0 ? (
+                    <img 
+                      src={recentWorks[activeProject].image} 
+                      alt={recentWorks[activeProject].title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   <div className="absolute bottom-4 left-4 text-white">
-                    <span className="inline-block px-2 sm:px-3 py-1 bg-blue-500 rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-3">
-                      {recentWorks[activeProject].category}
-                    </span>
-                    <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">{recentWorks[activeProject].title}</h3>
-                    <p className="text-blue-100 text-xs sm:text-sm">{recentWorks[activeProject].location}</p>
+                    {recentWorks.length > 0 && (
+                      <>
+                        <span className="inline-block px-2 sm:px-3 py-1 bg-blue-500 rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+                          {recentWorks[activeProject].category}
+                        </span>
+                        <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">{recentWorks[activeProject].title}</h3>
+                        <p className="text-blue-100 text-xs sm:text-sm">{recentWorks[activeProject].location}</p>
+                      </>
+                    )}
                   </div>
                   <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
                     <button className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3 hover:bg-white/30 transition-all duration-300">
@@ -442,10 +424,10 @@ export default function LandingPage({ openQuoteModal }) {
                 </div>
                 <div className="p-4 sm:p-8">
                   <p className="text-gray-600 mb-3 sm:mb-6 leading-relaxed text-sm sm:text-base">
-                    {recentWorks[activeProject].description}
+                    {recentWorks[activeProject]?.description || 'Our expert team delivers high-quality waterproofing solutions across India.'}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3 sm:mb-6">
-                    {recentWorks[activeProject].features.map((feature, index) => (
+                    {(recentWorks[activeProject]?.features || []).map((feature, index) => (
                       <span key={index} className="px-2 sm:px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs sm:text-sm font-medium">
                         {feature}
                       </span>
@@ -453,7 +435,7 @@ export default function LandingPage({ openQuoteModal }) {
                   </div>
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
                     <span className="text-xs sm:text-sm text-gray-500">
-                      Completed: {recentWorks[activeProject].completedDate}
+                      {recentWorks[activeProject]?.completedDate ? `Completed: ${recentWorks[activeProject].completedDate}` : ''}
                     </span>
                     <button className="text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-2 group-hover:translate-x-2 transition-transform duration-300 text-xs sm:text-base">
                       <span>View Details</span>
@@ -465,7 +447,7 @@ export default function LandingPage({ openQuoteModal }) {
             </div>
             {/* Project List */}
             <div className="space-y-3 sm:space-y-4 animate-on-scroll">
-              {recentWorks.map((project, index) => (
+              {(recentWorks || []).map((project, index) => (
                 <div 
                   key={index}
                   onClick={() => setActiveProject(index)}

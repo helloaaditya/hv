@@ -23,10 +23,26 @@ const waterproofingServices = [
 export default function Services({ openQuoteModal }) {
   const [hoveredService, setHoveredService] = useState(null);
   const [animationTrigger, setAnimationTrigger] = useState(false);
+  const [servicesFromApi, setServicesFromApi] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimationTrigger(true), 100);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchServices() {
+      try {
+        const res = await fetch('https://hv-4qa2.onrender.com/api/services');
+        const json = res.ok ? await res.json() : [];
+        if (!isCancelled) setServicesFromApi(Array.isArray(json) ? json : []);
+      } catch (e) {
+        if (!isCancelled) setServicesFromApi([]);
+      }
+    }
+    fetchServices();
+    return () => { isCancelled = true; };
   }, []);
 
   const ServiceCard = ({ title, services, icon: Icon, gradient, delay = 0 }) => (
@@ -133,22 +149,46 @@ export default function Services({ openQuoteModal }) {
         </div>
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-2xl md:max-w-7xl mx-auto">
-          <ServiceCard
-            title="Flooring Services"
-            services={flooringServices}
-            icon={Hammer}
-            gradient="from-blue-600 to-cyan-600"
-            delay={600}
-            openQuoteModal={openQuoteModal}
-          />
-          <ServiceCard
-            title="Waterproofing Services"
-            services={waterproofingServices}
-            icon={Shield}
-            gradient="from-purple-600 to-pink-600"
-            delay={800}
-            openQuoteModal={openQuoteModal}
-          />
+          {/* If API has services, render grouped by category; else show defaults */}
+          {servicesFromApi.length > 0 ? (
+            <>
+              <ServiceCard
+                title="Flooring Services"
+                services={servicesFromApi.filter(s => s.category === 'flooring').map(s => s.title)}
+                icon={Hammer}
+                gradient="from-blue-600 to-cyan-600"
+                delay={600}
+                openQuoteModal={openQuoteModal}
+              />
+              <ServiceCard
+                title="Waterproofing Services"
+                services={servicesFromApi.filter(s => s.category === 'waterproofing').map(s => s.title)}
+                icon={Shield}
+                gradient="from-purple-600 to-pink-600"
+                delay={800}
+                openQuoteModal={openQuoteModal}
+              />
+            </>
+          ) : (
+            <>
+              <ServiceCard
+                title="Flooring Services"
+                services={flooringServices}
+                icon={Hammer}
+                gradient="from-blue-600 to-cyan-600"
+                delay={600}
+                openQuoteModal={openQuoteModal}
+              />
+              <ServiceCard
+                title="Waterproofing Services"
+                services={waterproofingServices}
+                icon={Shield}
+                gradient="from-purple-600 to-pink-600"
+                delay={800}
+                openQuoteModal={openQuoteModal}
+              />
+            </>
+          )}
         </div>
         {/* Bottom CTA */}
         <div className={`text-center mt-14 sm:mt-20 transition-all duration-700 transform ${
