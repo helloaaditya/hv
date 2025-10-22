@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Shield, Phone, Mail, Star, CheckCircle, Users, Calendar, Award, ArrowRight, ChevronLeft, Plus, Minus, Eye, ExternalLink } from 'lucide-react';
 import ContactForm from '../components/ContactForm';
 import TestimonialsSection from './TestimonialsSection';
 
 export default function LandingPage({ openQuoteModal }) {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeProject, setActiveProject] = useState(0);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
@@ -109,7 +111,7 @@ export default function LandingPage({ openQuoteModal }) {
     return () => { isCancelled = true; };
   }, []);
 
-  // Build services cards content from API
+  // Build services cards content from API only
   const homepageServices = (servicesFromApi || []).slice(0, 4).map(s => ({
     icon: <Shield className="w-8 h-8" />, // default icon for all
     title: s.title,
@@ -117,6 +119,7 @@ export default function LandingPage({ openQuoteModal }) {
     features: Array.isArray(s.features) ? s.features.slice(0, 3) : [],
     image: s.image || 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop&auto=format'
   }));
+
 
   const faqs = [
     {
@@ -270,18 +273,20 @@ export default function LandingPage({ openQuoteModal }) {
               )}
             </>
           )}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center w-full">
-            <button
-              className="block w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center justify-center space-x-3 text-sm xs:text-base sm:text-lg"
-              onClick={openQuoteModal}
-            >
-              <span>Get Free Quote</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-            <button className="block w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm xs:text-base sm:text-lg">
-              <span>Learn More</span>
-            </button>
-          </div>
+          {heroSlides.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center w-full">
+              <button
+                className="block w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center justify-center space-x-3 text-sm xs:text-base sm:text-lg"
+                onClick={openQuoteModal}
+              >
+                <span>Get Free Quote</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+              <button className="block w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm xs:text-base sm:text-lg">
+                <span>Learn More</span>
+              </button>
+            </div>
+          )}
         </div>
         {heroSlides.length > 1 && (
           <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3">
@@ -343,39 +348,66 @@ export default function LandingPage({ openQuoteModal }) {
               Comprehensive waterproofing solutions tailored to protect your property from water damage with cutting-edge technology and expert craftsmanship
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {(homepageServices.length > 0 ? homepageServices : []).map((service, index) => (
-              <div key={index} className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 group animate-on-scroll">
-                <div className="relative h-36 sm:h-48 overflow-hidden">
-                  <img 
-                    src={service.image} 
-                    alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                  <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
-                    {service.icon}
+          {homepageServices.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+              {homepageServices.map((service, index) => (
+                <div key={index} className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 group animate-on-scroll">
+                  <div className="relative h-36 sm:h-48 overflow-hidden">
+                    <img 
+                      src={service.image} 
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                      {service.icon}
+                    </div>
+                  </div>
+                  <div className="p-4 sm:p-8">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">{service.title}</h3>
+                    <p className="text-gray-600 mb-3 sm:mb-6 leading-relaxed text-sm sm:text-base">{service.description}</p>
+                    <ul className="space-y-2 sm:space-y-3 mb-3 sm:mb-6">
+                      {service.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center space-x-2 sm:space-x-3 text-gray-700 text-xs sm:text-sm">
+                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button className="text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-2 group-hover:translate-x-2 transition-transform duration-300 text-xs sm:text-base">
+                      <span>Learn More</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-                <div className="p-4 sm:p-8">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">{service.title}</h3>
-                  <p className="text-gray-600 mb-3 sm:mb-6 leading-relaxed text-sm sm:text-base">{service.description}</p>
-                  <ul className="space-y-2 sm:space-y-3 mb-3 sm:mb-6">
-                    {service.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center space-x-2 sm:space-x-3 text-gray-700 text-xs sm:text-sm">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-2 group-hover:translate-x-2 transition-transform duration-300 text-xs sm:text-base">
-                    <span>Learn More</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                <Shield className="w-12 h-12 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Services Available</h3>
+              <p className="text-gray-500 mb-6">Services will be displayed here once they are added through the admin panel.</p>
+              <button 
+                onClick={() => navigate('/admin')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+              >
+                Go to Admin Panel
+              </button>
+            </div>
+          )}
+          {homepageServices.length > 0 && (
+            <div className="text-center mt-10 sm:mt-16">
+              <button 
+                onClick={() => navigate('/services')}
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg text-base sm:text-lg flex items-center justify-center space-x-2 mx-auto"
+              >
+                <span>View All Services</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
