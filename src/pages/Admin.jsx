@@ -651,7 +651,7 @@ export default function Admin() {
             }`}
           >
             <MessageSquare className="w-4 h-4 inline mr-2" />
-            Submissions ({submissions.length})
+            Leads ({submissions.length})
           </button>
           <button
             onClick={() => setActiveTab('testimonials')}
@@ -686,7 +686,7 @@ export default function Admin() {
             <Home className="w-4 h-4 inline mr-2" />
             Hero Slides ({heroSlides.length})
           </button>
-          <button
+          {/* <button
             onClick={() => setActiveTab('homepage')}
             className={`px-4 py-3 font-semibold border-b-2 transition-colors text-sm ${
               activeTab === 'homepage'
@@ -696,8 +696,8 @@ export default function Admin() {
           >
             <Settings className="w-4 h-4 inline mr-2" />
             Homepage Content
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={() => setActiveTab('contact')}
             className={`px-4 py-3 font-semibold border-b-2 transition-colors text-sm ${
               activeTab === 'contact'
@@ -707,7 +707,7 @@ export default function Admin() {
           >
             <Phone className="w-4 h-4 inline mr-2" />
             Contact Details
-          </button>
+          </button> */}
           <button
             onClick={() => setActiveTab('photos')}
             className={`px-4 py-3 font-semibold border-b-2 transition-colors text-sm ${
@@ -1164,7 +1164,7 @@ export default function Admin() {
           </>
         )}
 
-        {/* Contact Details Tab */}
+        {/* Contact Details Tab
         {activeTab === 'contact' && (
           <>
             <div className="mb-4">
@@ -1211,7 +1211,7 @@ export default function Admin() {
               </div>
             )}
           </>
-        )}
+        )} */}
 
         {/* Project Photos Tab */}
         {activeTab === 'photos' && (

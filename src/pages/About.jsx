@@ -73,7 +73,7 @@ export default function About() {
           />
         ))}
       </div>
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-22 sm:py-20">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-20 sm:py-24">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-10 sm:mb-20">
