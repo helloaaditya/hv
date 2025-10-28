@@ -614,31 +614,45 @@ export default function Admin() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] py-22">
       <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-7xl border border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-blue-700">Admin Dashboard</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handleExport}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 flex items-center gap-2"
-              title={`Export ${activeTab} to Excel`}
-            >
-              <FileSpreadsheet className="w-5 h-5" /> Export
-            </button>
-            <button
-              onClick={handleDeleteAll}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
-              disabled={loading || (activeTab === 'submissions' ? submissions.length === 0 : testimonials.length === 0)}
-            >
-              Delete All
-            </button>
-            <button
-              onClick={() => { setToken(''); localStorage.removeItem('adminToken'); }}
-              className="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 text-center sm:text-left">
+    Admin Dashboard
+  </h2>
+
+  <div className="flex flex-wrap justify-center sm:justify-end gap-2">
+    <button
+      onClick={handleExport}
+      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 flex items-center gap-2 w-full sm:w-auto justify-center"
+      title={`Export ${activeTab} to Excel`}
+    >
+      <FileSpreadsheet className="w-5 h-5" /> Export
+    </button>
+
+    <button
+      onClick={handleDeleteAll}
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 w-full sm:w-auto"
+      disabled={
+        loading ||
+        (activeTab === 'submissions'
+          ? submissions.length === 0
+          : testimonials.length === 0)
+      }
+    >
+      Delete All
+    </button>
+
+    <button
+      onClick={() => {
+        setToken('');
+        localStorage.removeItem('adminToken');
+      }}
+      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-200 w-full sm:w-auto"
+    >
+      Logout
+    </button>
+  </div>
+</div>
+
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap border-b border-gray-200 mb-6">
