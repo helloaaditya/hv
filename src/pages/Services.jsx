@@ -36,7 +36,7 @@ export default function Services({ openQuoteModal }) {
     let isCancelled = false;
     async function fetchServices() {
       try {
-        const res = await fetch('https://hv-4qa2.onrender.com/api/services');
+        const res = await fetch('https://hv-mefz.onrender.com/api/services');
         const json = res.ok ? await res.json() : [];
         if (!isCancelled) {
           setServicesFromApi(Array.isArray(json) ? json : []);

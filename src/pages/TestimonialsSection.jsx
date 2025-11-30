@@ -25,7 +25,7 @@ const TestimonialsSection = () => {
   const fetchTestimonials = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://hv-4qa2.onrender.com/api/testimonials');
+      const response = await fetch('https://hv-mefz.onrender.com/api/testimonials');
       if (!response.ok) {
         throw new Error('Failed to fetch testimonials');
       }
@@ -73,7 +73,7 @@ const TestimonialsSection = () => {
       }
 
       // Submit testimonial to API
-      const response = await fetch('https://hv-4qa2.onrender.com/api/testimonials', {
+      const response = await fetch('https://hv-mefz.onrender.com/api/testimonials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

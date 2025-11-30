@@ -81,9 +81,9 @@ export default function LandingPage({ openQuoteModal }) {
     async function fetchContent() {
       try {
         const [contentRes, servicesRes, photosRes] = await Promise.all([
-          fetch('https://hv-4qa2.onrender.com/api/homepage-content'),
-          fetch('https://hv-4qa2.onrender.com/api/services'),
-          fetch('https://hv-4qa2.onrender.com/api/project-photos')
+          fetch('https://hv-mefz.onrender.com/api/homepage-content'),
+          fetch('https://hv-mefz.onrender.com/api/services'),
+          fetch('https://hv-mefz.onrender.com/api/project-photos')
         ]);
 
         if (isCancelled) return;

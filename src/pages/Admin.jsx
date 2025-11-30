@@ -26,7 +26,7 @@ export default function Admin() {
 
   const fetchSubmissions = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/submissions', {
+      fetch('https://hv-mefz.onrender.com/api/admin/submissions', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -38,7 +38,7 @@ export default function Admin() {
 
   const fetchTestimonials = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/testimonials', {
+      fetch('https://hv-mefz.onrender.com/api/admin/testimonials', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -50,7 +50,7 @@ export default function Admin() {
 
   const fetchServices = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/services', {
+      fetch('https://hv-mefz.onrender.com/api/admin/services', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -62,7 +62,7 @@ export default function Admin() {
 
   const fetchHomepageContent = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/homepage-content', {
+      fetch('https://hv-mefz.onrender.com/api/admin/homepage-content', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -79,7 +79,7 @@ export default function Admin() {
 
   const fetchContactDetails = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/contact-details', {
+      fetch('https://hv-mefz.onrender.com/api/admin/contact-details', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -91,7 +91,7 @@ export default function Admin() {
 
   const fetchProjectPhotos = () => {
     if (token) {
-      fetch('https://hv-4qa2.onrender.com/api/admin/project-photos', {
+      fetch('https://hv-mefz.onrender.com/api/admin/project-photos', {
         headers: { Authorization: token },
       })
         .then(res => res.json())
@@ -104,7 +104,7 @@ export default function Admin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    const res = await fetch('https://hv-4qa2.onrender.com/api/admin/login', {
+    const res = await fetch('https://hv-mefz.onrender.com/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(login),
@@ -139,8 +139,8 @@ export default function Admin() {
     try {
       if (deleteTarget === 'all') {
         const endpoint = activeTab === 'submissions' 
-          ? 'https://hv-4qa2.onrender.com/api/admin/submissions/all'
-          : 'https://hv-4qa2.onrender.com/api/admin/testimonials/all';
+          ? 'https://hv-mefz.onrender.com/api/admin/submissions/all'
+          : 'https://hv-mefz.onrender.com/api/admin/testimonials/all';
         
         await fetch(endpoint, {
           method: 'DELETE',
@@ -154,8 +154,8 @@ export default function Admin() {
         }
       } else if (Array.isArray(deleteTarget)) {
         const endpoint = activeTab === 'submissions' 
-          ? 'https://hv-4qa2.onrender.com/api/admin/submissions/bulk'
-          : 'https://hv-4qa2.onrender.com/api/admin/testimonials/bulk';
+          ? 'https://hv-mefz.onrender.com/api/admin/submissions/bulk'
+          : 'https://hv-mefz.onrender.com/api/admin/testimonials/bulk';
         
         await fetch(endpoint, {
           method: 'DELETE',
@@ -173,8 +173,8 @@ export default function Admin() {
         }
       } else {
         const endpoint = activeTab === 'submissions' 
-          ? `https://hv-4qa2.onrender.com/api/admin/submissions/${deleteTarget}`
-          : `https://hv-4qa2.onrender.com/api/admin/testimonials/${deleteTarget}`;
+          ? `https://hv-mefz.onrender.com/api/admin/submissions/${deleteTarget}`
+          : `https://hv-mefz.onrender.com/api/admin/testimonials/${deleteTarget}`;
         
         await fetch(endpoint, {
           method: 'DELETE',
@@ -234,7 +234,7 @@ export default function Admin() {
   const handleApproveTestimonial = async (id, isApproved) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/testimonials/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/testimonials/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -284,7 +284,7 @@ export default function Admin() {
   const handleCreateService = async (serviceData) => {
     setLoading(true);
     try {
-      const response = await fetch('https://hv-4qa2.onrender.com/api/admin/services', {
+      const response = await fetch('https://hv-mefz.onrender.com/api/admin/services', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -308,7 +308,7 @@ export default function Admin() {
   const handleUpdateService = async (id, serviceData) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/services/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/services/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -332,7 +332,7 @@ export default function Admin() {
   const handleDeleteService = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/services/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/services/${id}`, {
         method: 'DELETE',
         headers: { Authorization: token },
       });
@@ -351,7 +351,7 @@ export default function Admin() {
   const handleCreateProjectPhoto = async (photoData) => {
     setLoading(true);
     try {
-      const response = await fetch('https://hv-4qa2.onrender.com/api/admin/project-photos', {
+      const response = await fetch('https://hv-mefz.onrender.com/api/admin/project-photos', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -375,7 +375,7 @@ export default function Admin() {
   const handleUpdateProjectPhoto = async (id, photoData) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/project-photos/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/project-photos/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -399,7 +399,7 @@ export default function Admin() {
   const handleDeleteProjectPhoto = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/project-photos/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/project-photos/${id}`, {
         method: 'DELETE',
         headers: { Authorization: token },
       });
@@ -417,7 +417,7 @@ export default function Admin() {
   const handleUpdateContactDetails = async (id, detailsData) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/contact-details/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/contact-details/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -441,7 +441,7 @@ export default function Admin() {
   const handleUpdateHomepageContent = async (id, contentData) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/homepage-content/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/homepage-content/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -466,7 +466,7 @@ export default function Admin() {
   const handleCreateHeroSlide = async (slideData) => {
     setLoading(true);
     try {
-      const response = await fetch('https://hv-4qa2.onrender.com/api/admin/homepage-content', {
+      const response = await fetch('https://hv-mefz.onrender.com/api/admin/homepage-content', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -494,7 +494,7 @@ export default function Admin() {
   const handleUpdateHeroSlide = async (id, slideData) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/homepage-content/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/homepage-content/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -518,7 +518,7 @@ export default function Admin() {
   const handleDeleteHeroSlide = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://hv-4qa2.onrender.com/api/admin/homepage-content/${id}`, {
+      const response = await fetch(`https://hv-mefz.onrender.com/api/admin/homepage-content/${id}`, {
         method: 'DELETE',
         headers: { Authorization: token },
       });
