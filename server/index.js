@@ -173,6 +173,20 @@ app.get('/api/admin/submissions', auth, async (req, res) => {
   res.json(submissions);
 });
 
+// Delete a single submission (admin only)
+app.delete('/api/admin/submissions/:id', auth, async (req, res) => {
+  try {
+    const submission = await Submission.findByIdAndDelete(req.params.id);
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+    res.json({ message: 'Submission deleted successfully' });
+  } catch (error) {
+    console.error('Delete submission error:', error);
+    res.status(500).json({ message: 'Failed to delete submission', error: error.message });
+  }
+});
+
 // Testimonial routes
 // Submit a new testimonial
 app.post('/api/testimonials', async (req, res) => {
